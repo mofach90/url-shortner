@@ -3,7 +3,7 @@
 api/node_modules/
 api/dist/
 api/.env
-api/firebase-debug.log
+firebase-debug.log
 
 
 #### Frontend

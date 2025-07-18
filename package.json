@@ -1,0 +1,9 @@
+{
+  "name": "url-shortner-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions"
+  }
+}
+
