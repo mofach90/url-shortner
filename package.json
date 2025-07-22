@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "serve": "firebase emulators:start --only functions,hosting"
+    "serve": "firebase emulators:start --only functions,hosting",
+    "build:ui": "npm run build --prefix ui",
+    "deploy": "npm run build:ui && firebase deploy"
   }
 }
-

@@ -9,7 +9,7 @@ const app = express();
 
 app.use(cors({ origin: true }));
 
-app.get("/hello", (req, res) => {
+app.get("/api/hello", (req, res) => {
   res.status(200).send({ message: "Hello from the API!" });
 });
 

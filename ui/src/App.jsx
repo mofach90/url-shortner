@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './App.css'
+import './App.css';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -12,11 +12,16 @@ function App() {
     setMessage('');
     try {
       // Use a relative path. Firebase Hosting will rewrite this to your function.
+      console.log('Fetching /hello endpoint...');
       const response = await fetch('/api/hello');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      console.log('Response received, parsing JSON...');
+      console.log('Response status:', response);
       const data = await response.json();
+      console.log({ data });
+
       setMessage(data.message);
     } catch (e) {
       setError(`Failed to fetch: ${e.message}`);
@@ -28,7 +33,7 @@ function App() {
   return (
     <>
       <h1>URL Shortener</h1>
-      <div className="card">
+      <div className='card'>
         <button onClick={testApi} disabled={loading}>
           {loading ? 'Loading...' : 'Test API Connection'}
         </button>
@@ -36,7 +41,7 @@ function App() {
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
