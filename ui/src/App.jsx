@@ -1,10 +1,39 @@
+import { useState } from 'react';
 import './App.css'
 
 function App() {
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const testApi = async () => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+    try {
+      const response = await fetch('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/hello');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setMessage(data.message);
+    } catch (e) {
+      setError(`Failed to fetch: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-
+      <h1>URL Shortener</h1>
+      <div className="card">
+        <button onClick={testApi} disabled={loading}>
+          {loading ? 'Loading...' : 'Test API Connection'}
+        </button>
+        {message && <p style={{ color: 'green' }}>Success: {message}</p>}
+        {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      </div>
     </>
   )
 }
