@@ -11,7 +11,8 @@ function App() {
     setError('');
     setMessage('');
     try {
-      const response = await fetch('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/hello');
+      // Use a relative path. Firebase Hosting will rewrite this to your function.
+      const response = await fetch('/api/hello');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
