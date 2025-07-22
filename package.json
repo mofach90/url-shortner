@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "serve": "firebase emulators:start --only functions"
+    "serve": "firebase emulators:start --only functions,hosting"
   }
 }
 
