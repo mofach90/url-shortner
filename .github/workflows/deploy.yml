@@ -1,0 +1,37 @@
+name: Deploy to Firebase on Main Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Install API dependencies
+        run: npm install --prefix api
+
+      - name: Install UI dependencies
+        run: npm install --prefix ui
+
+      - name: Build UI
+        run: npm run build:ui
+
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MO_URL_SHORTNER }}'
+          projectId: mo-url-shortner
