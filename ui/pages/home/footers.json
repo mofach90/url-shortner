@@ -1,0 +1,22 @@
+[
+  {
+    "id": "contact",
+    "title": "Company",
+    "menu": [
+      {
+        "title": "Contact us",
+        "link": "https://cloudpilots.com/details/Kontakt"
+      }
+    ]
+  },
+  {
+    "id": "privacyPolicy",
+    "title": "Legal",
+    "menu": [
+      {
+        "title": "Privacy policy",
+        "link": "https://cloudpilots.com/Datenschutz"
+      }
+    ]
+  }
+]
