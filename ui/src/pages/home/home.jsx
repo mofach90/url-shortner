@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
+import Bar from './bar.jsx'
 
-import Bar from './bar.jsx';
 import Footer from './footer.jsx';
 
 const Home = ({

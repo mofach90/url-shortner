@@ -7,14 +7,14 @@ import {
   toolbarClasses,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
 });
 
-const Bar = ({ name, showRegisterBtn, logoProps }) => {
-  // const navigate = useNavigate();
+const Bar = ({ name, showRegisterBtn }) => {
+  const navigate = useNavigate();
 
   return (
     <AppBar position='static' color='transparent' elevation={0}>
@@ -28,8 +28,8 @@ const Bar = ({ name, showRegisterBtn, logoProps }) => {
       >
         <Box
           sx={{ cursor: 'pointer' }}
-          onClick={null}
-          // onClick={() => navigate('/')}
+          // onClick={null}
+          onClick={() => navigate('/')}
           flexDirection='row'
           display='flex'
           alignItems='center'
@@ -51,7 +51,7 @@ const Bar = ({ name, showRegisterBtn, logoProps }) => {
         </Box>
         <Box flexGrow={1} />
         {showRegisterBtn && (
-          <Link to='/register'>
+          <Link to='/'>
             <Box mr={1}>
               <Button variant='outlined' color='primary'>
                 Register
@@ -59,7 +59,7 @@ const Bar = ({ name, showRegisterBtn, logoProps }) => {
             </Box>
           </Link>
         )}
-        <Link to='/login'>
+        <Link to='/'>
           <Button variant='outlined' color='primary'>
             Login
           </Button>

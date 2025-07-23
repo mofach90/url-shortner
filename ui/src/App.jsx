@@ -1,11 +1,12 @@
+import { BrowserRouter } from 'react-router-dom';
 import './App.css';
-import HOME from './pages/Home';
+import Home from './pages/home/home.jsx';
 
 function App() {
   return (
-    <>
-      <HOME />
-    </>
+    <BrowserRouter>
+      <Home appName={'URL Shortner'} showRegisterBtn={true} />z
+    </BrowserRouter>
   );
 }
 
