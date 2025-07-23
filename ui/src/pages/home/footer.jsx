@@ -1,10 +1,10 @@
 import { Box, Grid, Link, styled, Typography } from '@mui/material';
 import footers from './footers.json';
 
-const Copyright = ({ company = 'CLOUDPILOTS' }) => (
+const Copyright = ({ company = '' }) => (
   <Typography variant='body2' color='textSecondary' align='center'>
     {'Copyright © '}
-    <Link color='inherit' href='https://cloudpilots.com/'>
+    <Link color='inherit' href='/'>
       {company}
     </Link>{' '}
     {new Date().getFullYear()}
