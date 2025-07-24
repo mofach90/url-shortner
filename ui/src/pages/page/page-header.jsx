@@ -1,4 +1,3 @@
-/* Copyright (c) 2022 CLOUDPILOTS Software & Consulting GmbH */
 
 import { Box, Typography } from '@mui/material';
 

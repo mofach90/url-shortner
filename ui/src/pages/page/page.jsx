@@ -1,4 +1,3 @@
-/* Copyright (c) 2022 CLOUDPILOTS Software & Consulting GmbH */
 
 import { Box, Grid } from '@mui/material';
 import PageHeader from './page-header.jsx';
