@@ -18,12 +18,7 @@ function App() {
       <Home appName={'URL Shortner'} showRegisterBtn={true}>
         <Page>
           <Row>
-            <Typography variant='h3' gutterBottom>
-              Developer App
-            </Typography>
-            <Typography variant='body1' gutterBottom>
-              hello world
-            </Typography>
+
           </Row>
         </Page>
       </Home>
