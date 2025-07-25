@@ -5,6 +5,8 @@
   "scripts": {
     "serve": "firebase emulators:start --only functions,hosting",
     "build:ui": "npm run build --prefix ui",
-    "deploy": "npm run build:ui && firebase deploy"
+    "deploy": "npm run build:ui && firebase deploy",
+    "dev:ui": "npm run dev --prefix ui",
+    "dev": "npm run dev:ui"
   }
 }

@@ -14,7 +14,7 @@ const Home = ({
   return (
     <Grid
       alignItems='center'
-      sx={{ minHeight: '100%' }}
+      sx={{ height: '100%', backgroundColor: '#f2b3b3ff' }}
       container
       direction='column'
       justifyContent='space-between'

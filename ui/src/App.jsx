@@ -15,13 +15,23 @@ const Row = ({ children }) => (
 function App() {
   return (
     <BrowserRouter>
-      <Home appName={'Google Developer Group Berlin Url Shortner'} showRegisterBtn={true}>
-        <Page>
-          <Row>
-
-          </Row>
-        </Page>
-      </Home>
+      {/* <div
+        className='App'
+        style={{ height: '100%', backgroundColor: '#2c9754ff' }}
+      > */}
+        <Home appName={'URL Shortner'} showRegisterBtn={true}>
+          <Page>
+            <Row>
+              <Typography variant='h3' gutterBottom>
+                Developer App
+              </Typography>
+              <Typography variant='body1' gutterBottom>
+                hello world
+              </Typography>
+            </Row>
+          </Page>
+        </Home>
+      {/* </div> */}
     </BrowserRouter>
   );
 }

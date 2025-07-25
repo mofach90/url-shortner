@@ -6,5 +6,6 @@ import App from './App.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
+    {/* <div id='modal-root' ></div> */}
   </StrictMode>,
 )
