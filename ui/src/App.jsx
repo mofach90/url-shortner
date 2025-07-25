@@ -15,7 +15,7 @@ const Row = ({ children }) => (
 function App() {
   return (
     <BrowserRouter>
-      <Home appName={'URL Shortner'} showRegisterBtn={true}>
+      <Home appName={'Google Developer Group Berlin Url Shortner'} showRegisterBtn={true}>
         <Page>
           <Row>
 
