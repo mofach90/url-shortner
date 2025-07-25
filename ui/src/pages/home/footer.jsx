@@ -1,7 +1,7 @@
 import { Box, Grid, Link, styled, Typography } from '@mui/material';
 import footers from './footers.json';
 
-const Copyright = ({ company = '' }) => (
+const Copyright = ({ company = 'GDG Berlin' }) => (
   <Typography variant='body2' color='textSecondary' align='center'>
     {'Copyright © '}
     <Link color='inherit' href='/'>
@@ -17,6 +17,7 @@ const FooterContainer = styled(Box)`
   & a {
     text-decoration: none;
   }
+    background-color: #2c9754ff;
 `;
 
 const Footer = ({ company, links }) => (

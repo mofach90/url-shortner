@@ -1,11 +1,11 @@
 [
   {
     "id": "contact",
-    "title": "Company",
+    "title": "GDG Berlin",
     "menu": [
       {
         "title": "Contact us",
-        "link": "ggggg"
+        "link": "https://gdg-berlin.com/"
       }
     ]
   },
@@ -14,8 +14,8 @@
     "title": "Legal",
     "menu": [
       {
-        "title": "Privacy policy",
-        "link": "xxxxxx"
+        "title": "Policy",
+        "link": "https://berlincodeofconduct.org/en"
       }
     ]
   }

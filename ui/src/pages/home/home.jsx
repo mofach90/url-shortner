@@ -14,12 +14,12 @@ const Home = ({
   return (
     <Grid
       alignItems='center'
-      sx={{ height: '100%', backgroundColor: '#f2b3b3ff' }}
+      sx={{ minHeight: '100vh', backgroundColor: '#a37b7bff', minWidth: '100vw'}}
       container
       direction='column'
       justifyContent='space-between'
     >
-      <Grid item xs={12} container>
+      <Grid item xs={12} container sx={{ backgroundColor: '#2c9754ff' , minWidth: '100vw'}}>
         <Bar name={appName} showRegisterBtn={showRegisterBtn} {...barProps} />
       </Grid>
       <Grid item xs={12} container>
