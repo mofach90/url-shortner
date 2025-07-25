@@ -17,7 +17,6 @@ const FooterContainer = styled(Box)`
   & a {
     text-decoration: none;
   }
-    background-color: #2c9754ff;
 `;
 
 const Footer = ({ company, links }) => (
