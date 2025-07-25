@@ -15,10 +15,6 @@ const Row = ({ children }) => (
 function App() {
   return (
     <BrowserRouter>
-      {/* <div
-        className='App'
-        style={{ height: '100%', backgroundColor: '#2c9754ff' }}
-      > */}
         <Home appName={'URL Shortner'} showRegisterBtn={true}>
           <Page>
             <Row>
@@ -31,7 +27,6 @@ function App() {
             </Row>
           </Page>
         </Home>
-      {/* </div> */}
     </BrowserRouter>
   );
 }

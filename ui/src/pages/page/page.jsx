@@ -15,7 +15,7 @@ const Page = ({
     justifyContent='flex-start'
     alignItems='flex-start'
     {...containerProps}
-    sx={{ minHeight: '100%', backgroundColor: '#b81212ff' }}
+    sx={{ minHeight: '100%' }}
   >
     {(title || description) && (
       <Grid item xs={12}>
