@@ -15,14 +15,14 @@ const Row = ({ children }) => (
 function App() {
   return (
     <BrowserRouter>
-        <Home appName={'URL Shortner'} showRegisterBtn={true}>
+        <Home appName={'URL Shortner'}>
           <Page>
             <Row>
               <Typography variant='h3' gutterBottom>
-                Developer App
+                GDG Url Shortner
               </Typography>
               <Typography variant='body1' gutterBottom>
-                hello world
+                Google Developer Group
               </Typography>
             </Row>
           </Page>
