@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import Bar from './bar.jsx'
+import Bar from './bar.jsx';
 
 import Footer from './footer.jsx';
 
@@ -14,12 +14,12 @@ const Home = ({
   return (
     <Grid
       alignItems='center'
-      sx={{ minHeight: '100vh', backgroundColor: '#a37b7bff', minWidth: '100vw'}}
+      sx={{ minHeight: '100vh', minWidth: '100vw' }}
       container
       direction='column'
       justifyContent='space-between'
     >
-      <Grid item xs={12} container sx={{ backgroundColor: '#2c9754ff' , minWidth: '100vw'}}>
+      <Grid item xs={12} container sx={{ minWidth: '100vw' }}>
         <Bar name={appName} showRegisterBtn={showRegisterBtn} {...barProps} />
       </Grid>
       <Grid item xs={12} container>
