@@ -1,6 +1,5 @@
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import Bar from './bar.jsx';
-
 import Footer from './footer.jsx';
 
 const Home = ({
@@ -12,22 +11,36 @@ const Home = ({
   showRegisterBtn,
 }) => {
   return (
-    <Grid
-      alignItems='center'
-      sx={{ minHeight: '100vh', minWidth: '100vw' }}
-      container
-      direction='column'
-      justifyContent='space-between'
+    <Box
+      display='flex'
+      flexDirection='column'
+      sx={{ minHeight: '100vh', width: '100%' }}
     >
-      <Grid item xs={12} container sx={{ minWidth: '100vw' }}>
+      {/* Header */}
+      <Box component='header' sx={{ width: '100%' }}>
         <Bar name={appName} showRegisterBtn={showRegisterBtn} {...barProps} />
-      </Grid>
-      <Grid item xs={12} container>
+      </Box>
+
+      {/* Main content: grows to fill the middle */}
+      <Box
+        component='main'
+        sx={{
+          flexGrow: 1,
+          width: '100%',
+          // optional: add responsive padding
+          px: { xs: 2, sm: 3, md: 4 },
+          py: { xs: 2, sm: 3, md: 4 },
+        }}
+      >
         {children}
-      </Grid>
-      <Footer links={links} company={company} />
-    </Grid>
+      </Box>
+
+      {/* Footer */}
+      <Box component='footer' sx={{ width: '100%' }}>
+        <Footer links={links} company={company} />
+      </Box>
+    </Box>
   );
 };
 
-export { Home as default };
+export default Home;
