@@ -3,13 +3,16 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import Home from './pages/home/home.jsx';
 import Page from './pages/page/page.jsx';
+import { Container } from '@mui/material';
 
 const Row = ({ children }) => (
-  <Grid container spacing={1} justifyContent='center'>
-    <Grid item xs={12} md={10} lg={8}>
-      {children}
-    </Grid>
-  </Grid>
+  <Container            /* gives you centered, responsive width */
+    maxWidth="lg"       
+    disableGutters      /* no extra side padding since you’re inside Page */
+    sx={{ px: { xs: 2, sm: 3 } }}  /* optional interior breathing room */
+  >
+    {children}
+  </Container>
 );
 
 function App() {

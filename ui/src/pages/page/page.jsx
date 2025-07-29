@@ -1,4 +1,3 @@
-
 import { Box, Grid } from '@mui/material';
 import PageHeader from './page-header.jsx';
 
@@ -12,10 +11,9 @@ const Page = ({
 }) => (
   <Grid
     container
-    justifyContent='flex-start'
     alignItems='flex-start'
     {...containerProps}
-    sx={{ minHeight: '100%' }}
+    sx={{ flexGrow: 1, width: '100%', m: 0 }}
   >
     {(title || description) && (
       <Grid item xs={12}>
