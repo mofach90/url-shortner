@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import Home from './pages/home/home.jsx';
 import Page from './pages/page/page.jsx';
+import { auth } from './lib/firebase.js';
 
 const Row = ({ children }) => (
   <Container /* gives you centered, responsive width */
@@ -15,7 +16,7 @@ const Row = ({ children }) => (
 );
 
 function App() {
-  console.log(import.meta.env.VITE_FIREBASE_API_KEY);
+  console.log("test user", auth.currentUser);
   return (
     <BrowserRouter>
       <Home appName={'URL Shortner'}>
