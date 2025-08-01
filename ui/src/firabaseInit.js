@@ -2,7 +2,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './lib/firebase.js';
 import useAuthStore from './store/authStore.js';
 
-const set = useAuthStore.getState().setState; 
+const set = useAuthStore.setState; 
 
 onAuthStateChanged(auth, async (firebaseUser) => {
   if (firebaseUser) {
