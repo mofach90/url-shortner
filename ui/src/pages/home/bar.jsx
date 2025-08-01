@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import AuthButton from '../../components/AuthButton.jsx';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
@@ -60,9 +61,7 @@ const Bar = ({ name, showRegisterBtn }) => {
           </Link>
         )}
         <Link to='/'>
-          <Button variant='outlined' color='primary'>
-            Login
-          </Button>
+          <AuthButton />
         </Link>
       </Toolbar>
     </AppBar>
