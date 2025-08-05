@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import Bar from './bar.jsx';
+import Bar from '../home/bar.jsx';
 
 
 const DashboardPage = () => {
