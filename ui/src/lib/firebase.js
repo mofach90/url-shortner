@@ -13,5 +13,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: 'select_account' });
+googleProvider.setCustomParameters(
+    
+    // { prompt: 'select_account' } // Uncomment this line if you want to always prompt the user to select an account
+
+);
 export { app, auth, googleProvider };

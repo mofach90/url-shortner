@@ -7,7 +7,7 @@ import {
   toolbarClasses,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import AuthButton from '../../components/AuthButton.jsx';
 
 const Link = styled(RouterLink)({
@@ -15,8 +15,6 @@ const Link = styled(RouterLink)({
 });
 
 const Bar = ({ name, showRegisterBtn }) => {
-  const navigate = useNavigate();
-
   return (
     <AppBar position='static' color='transparent' elevation={0}>
       <Toolbar
@@ -29,8 +27,6 @@ const Bar = ({ name, showRegisterBtn }) => {
       >
         <Box
           sx={{ cursor: 'pointer' }}
-          // onClick={null}
-          onClick={() => navigate('/')}
           flexDirection='row'
           display='flex'
           alignItems='center'
@@ -60,9 +56,7 @@ const Bar = ({ name, showRegisterBtn }) => {
             </Box>
           </Link>
         )}
-        <Link to='/'>
-          <AuthButton />
-        </Link>
+        <AuthButton />
       </Toolbar>
     </AppBar>
   );

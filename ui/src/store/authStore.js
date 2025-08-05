@@ -1,6 +1,7 @@
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { create } from 'zustand';
 import { auth, googleProvider } from '../lib/firebase.js';
+import { Navigate } from 'react-router-dom';
 
 const useAuthStore = create((set) => ({
   user: null,
@@ -15,6 +16,7 @@ const useAuthStore = create((set) => ({
         idToken: await cred.user.getIdToken(),
         loading: false,
       });
+      Navigate('/dashboard'); // Redirect to dashboard after login
     } catch (error) {
       console.error('Login failed', error);
       set({
