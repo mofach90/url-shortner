@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import AuthButton from '../../components/AuthButton.jsx';
+import ThemeToggle from '../../components/ThemeToggle.jsx';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
@@ -56,6 +57,9 @@ const Bar = ({ name, showRegisterBtn }) => {
             </Box>
           </Link>
         )}
+        <Box mr={1}>
+          <ThemeToggle />
+        </Box>
         <AuthButton />
       </Toolbar>
     </AppBar>
