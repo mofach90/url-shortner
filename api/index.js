@@ -13,6 +13,21 @@ app.get("/api/hello", (req, res) => {
   res.status(200).send({ message: "Hello from the API!" });
 });
 
+function requireAuth(req, res, next) {
+  const hdr = req.headers.authorization || '';
+  const m = hdr.match(/^Bearer\s+(.+)$/i);
+  if (!m) return res.status(401).json({ error: 'missing_bearer' });
+
+  admin.auth().verifyIdToken(m[1])
+    .then((decoded) => { req.user = decoded; next(); })
+    .catch(() => res.status(401).json({ error: 'invalid_token' }));
+}
+
+// after your /api/hello
+app.get('/api/ping-secure', requireAuth, (req, res) => {
+  res.json({ ok: true, uid: req.user.uid });
+});
+
 // Uncomment the following lines if you want to use nodejs server
 // const server = app.listen(7003, () => {
 //   console.log(`✅ API server listening on port 7003`);

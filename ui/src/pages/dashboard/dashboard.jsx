@@ -1,6 +1,6 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Bar from '../home/bar.jsx';
-
+import { fetchWithAuth } from '../../lib/apiClient.js';
 
 const DashboardPage = () => {
   return (
@@ -11,7 +11,7 @@ const DashboardPage = () => {
     >
       {/* Header */}
       <Box component='header' sx={{ width: '100%' }}>
-        <Bar  />
+        <Bar />
       </Box>
 
       {/* Main content: grows to fill the middle */}
@@ -24,11 +24,21 @@ const DashboardPage = () => {
           px: { xs: 2, sm: 3, md: 4 },
           py: { xs: 2, sm: 3, md: 4 },
         }}
-      >
-      </Box>
-
+      ></Box>
+      <Button variant='contained'
+        onClick={async () => {
+          const res = await fetchWithAuth('/api/ping-secure');
+          if (!res.ok) {
+            const error = await res.json();
+            console.error('Error:', error);
+            return;
+          }
+          const data = await res.json();
+          console.log('Response:', data);
+        }}
+      >Test api</Button>
     </Box>
   );
-}
+};
 
 export default DashboardPage;
