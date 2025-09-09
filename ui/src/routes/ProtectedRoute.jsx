@@ -5,7 +5,12 @@ import useAuthStore from '../store/authStore.js';
 export default function ProtectedRoute({ element }) {
   const { user, loading } = useAuthStore();
   useEffect(() => {
-    console.log('ProtectedRoute: checking auth state', { user, loading });
+    const uid = user?.uid;
+    if (uid && !loading) {
+      console.log('ProtectedRoute: user is signed in', { uid });
+    } else {
+      console.log('ProtectedRoute: user is NOT signed in');
+    }
   }, [loading, user]);
 
   if (loading) return null; // or a spinner
