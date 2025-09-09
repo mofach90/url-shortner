@@ -9,7 +9,7 @@ const app = express();
 
 app.use(cors({ origin: true }));
 
-app.get("/api/hello", (req, res) => {
+app.get("/hello", (req, res) => {
   res.status(200).send({ message: "Hello from the API!" });
 });
 
@@ -24,7 +24,7 @@ function requireAuth(req, res, next) {
 }
 
 // after your /api/hello
-app.get('/api/ping-secure', requireAuth, (req, res) => {
+app.get('/ping-secure', requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
 });
 
