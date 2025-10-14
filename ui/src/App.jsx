@@ -7,13 +7,13 @@ import ProtectedRoute from './routes/ProtectedRoute.jsx';
 function App() {
   return (
     <BrowserRouter>
-      {/* <Routes>
+      <Routes>
         <Route path='/' element={<LandingPage />} />
         <Route
           path='/dashboard'
           element={<ProtectedRoute element={<DashboardPage />} />} 
         />
-      </Routes> */}
+      </Routes>
     </BrowserRouter>
   );
 }
