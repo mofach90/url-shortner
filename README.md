@@ -1,100 +1,105 @@
 # URL Shortener
 
-A simple and efficient URL shortening service built with React for the frontend and Express.js for the backend. Create short, memorable links from long, unwieldy URLs.
-
-![App Screenshot](https://via.placeholder.com/720x400.png?text=Your+App+Screenshot+Here)
+A simple and efficient URL shortening service built with React, Material-UI, and Firebase. Create short, memorable links from long, unwieldy URLs.
 
 ## ✨ Features
 
--   **Shorten URLs**: Quickly generate a short link for any valid URL.
--   **Simple UI**: Clean and intuitive user interface built with React.
--   **Robust Backend**: A reliable and fast backend powered by Node.js and Express.
--   **(Planned) Click Tracking**: Track how many times your shortened links are visited.
--   **(Planned) Custom Aliases**: Create custom, human-readable short links.
--   **(Planned) User Accounts**: Sign up to manage all your links in one place.
+- **Authentication**: Sign in with Google through Firebase Auth
+- **Dark/Light Mode**: Toggle between dark and light themes
+- **Responsive Design**: Built with Material-UI components
+- **Protected Routes**: Secure routes for authenticated users
+- **(Planned) URL Shortening**: Generate and manage short URLs
+- **(Planned) Analytics**: Track usage of shortened URLs
 
 ---
 
 ## 🛠️ Tech Stack
 
-This project is built using the following technologies:
+- **Frontend**:
+  - React.js with Vite
+  - Material-UI (MUI)
+  - Zustand for state management
+  - Firebase Auth
+  - React Router
 
-*   **Frontend**:
-    *   [React.js](https://reactjs.org/) - A JavaScript library for building user interfaces.
-    *   [JavaScript (ES6+)](https://www.javascript.com/)
-    *   [CSS3](https://en.wikipedia.org/wiki/CSS) / (e.g., Styled Components, Tailwind CSS)
-
-*   **Backend**:
-    *   [Node.js](https://nodejs.org/) - JavaScript runtime environment.
-    *   [Express.js](https://expressjs.com/) - A web application framework for Node.js.
-
-*   **Database**:
-    *   (e.g., MongoDB with Mongoose, PostgreSQL with Sequelize, or a simple JSON file for storage)
+- **Backend**:
+  - Firebase Functions
+  - Express.js
+  - Firebase Admin SDK
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
-
 ### Prerequisites
 
-You'll need the following software installed on your machine:
-*   [Node.js](https://nodejs.org/en/download/) (which includes npm)
-*   [Git](https://git-scm.com/downloads)
-*   [Firebase CLI](https://firebase.google.com/docs/cli#install-cli-npm)
+- Node.js (v16 or later)
+- npm
+- Firebase CLI (`npm install -g firebase-tools`)
 
 ### Installation
 
-1.  **Clone the repository (replace `your-username` with your GitHub username):**
-    ```sh
-    git clone https://github.com/your-username/url-shortner.git && cd url-shortner
-    ```
+1. **Clone the repository:**
+   ```sh
+   git clone <repository-url> && cd url-shortner
+   ```
 
-2.  **Install backend dependencies:**
-    ```sh
-    # Navigate to the api directory
-    cd api
-    npm install
-    cd ..
-    ```
+2. **Install dependencies:**
+   ```sh
+   # Root dependencies
+   npm install
 
-3.  **Install and build frontend dependencies:**
-    ```sh
-    # Navigate to the ui directory
-    cd ui
-    npm install
-    npm run build # Builds the app for hosting
-    cd ..
-    ```
+   # UI dependencies
+   cd ui
+   npm install
+   cd ..
 
-4.  **Set up environment variables (for local emulation):**
+   # API dependencies
+   cd api
+   npm install
+   cd ..
+   ```
 
-    For local development, if your backend requires environment variables, create a `.env` file in the `api` directory.
+3. **Environment Setup:**
+   Create a `.env.local` file in the `ui` directory with your Firebase configuration:
+   ```env
+   VITE_FIREBASE_API_KEY=your-api-key
+   VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
+   VITE_FIREBASE_PROJECT_ID=your-project-id
+   VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+   VITE_FIREBASE_APP_ID=your-app-id
+   ```
 
-    ```env
-    # api/.env
-    # Add any necessary environment variables for your backend
-    # e.g., MONGO_URI=your_mongodb_connection_string
-    ```
-    > **Note**: For production, you should set environment variables using the Firebase CLI: `firebase functions:config:set yourservice.key="your-value"`
+### Development
 
-### Running the Application Locally
+You can run the application in two modes:
 
-1.  **Start the Firebase Emulators:**
-    From the root directory of the project, run the `serve` script:
-    ```sh
-    npm run serve
-    ```
+#### UI Development Only (Recommended)
+```sh
+npm run dev:ui
+```
+This starts the Vite dev server at `http://localhost:5173`
 
-The application should now be available at the URL provided by the Firebase emulator (usually `http://localhost:5000`). The UI will be served, and API calls to `/api/**` will be directed to your function.
+#### Full Stack Development
+```sh
+npm run serve
+```
+This starts Firebase emulators for both hosting and functions
 
 ---
 
+## 📝 Scripts
+
+- `npm run dev` - Start UI development server
+- `npm run serve` - Start Firebase emulators
+- `npm run build:ui` - Build the UI for production
+- `npm run deploy` - Build and deploy to Firebase
+
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📜 License
 
-This project is licensed under the MIT License. Feel free to create a `LICENSE` file and add the license text.
+This project is licensed under the MIT License.
