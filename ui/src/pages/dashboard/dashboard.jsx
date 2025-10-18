@@ -24,7 +24,8 @@ const DashboardPage = () => {
       ></Box>
       <Button variant='contained'
         onClick={async () => {
-          const res = await fetchWithAuth('/api/ping-secure');
+          // const res = await fetchWithAuth('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/ping-secure'); use this for local testing with emulator
+          const res = await fetchWithAuth('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/ping-secure');
           if (!res.ok) {
             const error = await res.json();
             console.error('Error:', error);
