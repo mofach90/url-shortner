@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import Bar from '../home/bar.jsx';
-import { fetchWithAuth } from '../../lib/apiClient.js';
+import useAuthStore from "../../store/authStore.js";
 
 const DashboardPage = () => {
   return (
@@ -22,10 +22,20 @@ const DashboardPage = () => {
           py: { xs: 2, sm: 3, md: 4 },
         }}
       ></Box>
-      <Button variant='contained'
+      <Button
+        variant='contained'
         onClick={async () => {
           // const res = await fetchWithAuth('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/ping-secure'); use this for local testing with emulator
-          const res = await fetchWithAuth('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/ping-secure');
+          // const res = await fetchWithAuth('http://127.0.0.1:5001/mo-url-shortner/us-central1/api/ping-secure');
+          const { idToken } = useAuthStore.getState();
+          const res = await fetch("http://127.0.0.1:5001/mo-url-shortner/us-central1/api/shorten", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${idToken}` ,
+            },
+            body: JSON.stringify({ longUrl: "https://www.google.com" }),
+          });
           if (!res.ok) {
             const error = await res.json();
             console.error('Error:', error);
@@ -34,7 +44,9 @@ const DashboardPage = () => {
           const data = await res.json();
           console.log('Response:', data);
         }}
-      >Test api</Button>
+      >
+        Test api
+      </Button>
     </Box>
   );
 };
