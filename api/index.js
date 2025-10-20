@@ -14,17 +14,33 @@ app.get("/hello", (req, res) => {
 });
 
 function requireAuth(req, res, next) {
-  const hdr = req.headers.authorization || '';
+  const hdr = req.headers.authorization || "";
   const m = hdr.match(/^Bearer\s+(.+)$/i);
-  if (!m) return res.status(401).json({ error: 'missing_bearer' });
+  if (!m) return res.status(401).json({ error: "missing_bearer" });
 
-  admin.auth().verifyIdToken(m[1])
-    .then((decoded) => { req.user = decoded; next(); })
-    .catch(() => res.status(401).json({ error: 'invalid_token' }));
+  admin
+    .auth()
+    .verifyIdToken(m[1])
+    .then((decoded) => {
+      req.user = decoded;
+      next();
+    })
+    .catch(() => res.status(401).json({ error: "invalid_token" }));
 }
 
+app.post("/shorten", requireAuth, (req, res) => {
+  try {
+    const { longUrl } = req.body;
+    if (!longUrl) {
+      return res.status(400).json({ error: "missing_longUrl" });
+    }
+  } catch (error) {
+    console.error("error on /shorten:", error);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
 // after your /api/hello
-app.get('/ping-secure', requireAuth, (req, res) => {
+app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
 });
 
