@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
-const generateCode = require('./utils/generateCode');
+const generateCode = require("./utils/generateCode");
 
 admin.initializeApp();
 
@@ -29,17 +29,52 @@ function requireAuth(req, res, next) {
     .catch(() => res.status(401).json({ error: "invalid_token" }));
 }
 
-app.post("/shorten", requireAuth, (req, res) => {
+app.post("/shorten", requireAuth, async (req, res) => {
   try {
     const { longUrl } = req.body;
+
     if (!longUrl) {
       return res.status(400).json({ error: "missing_longUrl" });
     }
-    new URL(longUrl);
-    const code = generateCode();
-    
-  } catch (error) {
-    console.error("error on /shorten:", error);
+    try {
+      new URL(longUrl);
+    } catch {
+      return res.status(400).json({ error: "invalid_url" });
+    }
+
+    const db = admin.firestore();
+    const urls = db.collection("urls");
+    const ownerUid = req.user.uid;
+    const BASE_URL = process.env.BASE_URL || "https://gdgurl.web.app"; // fallback
+
+    let code;
+    let docRef;
+    while (true) {
+      code = generateCode(7);
+      docRef = urls.doc(code);
+      const doc = await docRef.get();
+      if (!doc.exists) break; 
+    }
+
+    const data = {
+      code,
+      longUrl,
+      shortUrl: `${BASE_URL}/r/${code}`,
+      ownerUid,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      clicks: 0,
+    };
+
+    await docRef.set(data);
+
+    return res.status(201).json({
+      code: data.code,
+      longUrl: data.longUrl,
+      shortUrl: data.shortUrl,
+      createdAt: data.createdAt,
+    });
+  } catch (err) {
+    console.error("shorten error:", err);
     return res.status(500).json({ error: "internal_error" });
   }
 });
