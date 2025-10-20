@@ -5,6 +5,7 @@ const cors = require("cors");
 const generateCode = require("./utils/generateCode");
 
 admin.initializeApp();
+const db = admin.firestore();
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get("/hello", (req, res) => {
 
 function requireAuth(req, res, next) {
   const hdr = req.headers.authorization || "";
+  console.log(" req ", req.body);
   const m = hdr.match(/^Bearer\s+(.+)$/i);
   if (!m) return res.status(401).json({ error: "missing_bearer" });
 
@@ -32,7 +34,7 @@ function requireAuth(req, res, next) {
 app.post("/shorten", requireAuth, async (req, res) => {
   try {
     const { longUrl } = req.body;
-
+    console.log("Received longUrl:", longUrl);
     if (!longUrl) {
       return res.status(400).json({ error: "missing_longUrl" });
     }
@@ -42,8 +44,8 @@ app.post("/shorten", requireAuth, async (req, res) => {
       return res.status(400).json({ error: "invalid_url" });
     }
 
-    const db = admin.firestore();
     const urls = db.collection("urls");
+    console.log("Urls", urls);
     const ownerUid = req.user.uid;
     const BASE_URL = process.env.BASE_URL || "https://gdgurl.web.app"; // fallback
 
@@ -52,8 +54,11 @@ app.post("/shorten", requireAuth, async (req, res) => {
     while (true) {
       code = generateCode(7);
       docRef = urls.doc(code);
+      console.log("docRef", docRef);
       const doc = await docRef.get();
-      if (!doc.exists) break; 
+      console.log("doc", doc);
+
+      if (!doc.exists) break;
     }
 
     const data = {
@@ -64,8 +69,10 @@ app.post("/shorten", requireAuth, async (req, res) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       clicks: 0,
     };
+    console.log("Storing shortened URL:", data);
 
-    await docRef.set(data);
+    const result = await docRef.set(data);
+    console.log("Stored document result:", result);
 
     return res.status(201).json({
       code: data.code,
