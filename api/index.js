@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
+const generateCode = require('./utils/generateCode');
 
 admin.initializeApp();
 
@@ -34,6 +35,9 @@ app.post("/shorten", requireAuth, (req, res) => {
     if (!longUrl) {
       return res.status(400).json({ error: "missing_longUrl" });
     }
+    new URL(longUrl);
+    const code = generateCode();
+    
   } catch (error) {
     console.error("error on /shorten:", error);
     return res.status(500).json({ error: "internal_error" });
