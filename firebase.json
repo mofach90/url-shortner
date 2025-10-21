@@ -10,7 +10,7 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "runtime": "nodejs22" 
+      "runtime": "nodejs22"
     }
   ],
   "hosting": {
@@ -26,5 +26,12 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "emulators": {
+    "functions": { "port": 5001 },
+    "hosting": { "port": 5002 },
+    "firestore": { "port": 8080 },
+    "auth": { "port": 9099 },
+    "ui": { "enabled": true, "port": 4000 }
   }
 }
