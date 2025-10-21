@@ -18,4 +18,13 @@ googleProvider.setCustomParameters(
     // { prompt: 'select_account' } // Uncomment this line if you want to always prompt the user to select an account
 
 );
+console.log("🔥 FIREBASE PROJECT:", window.location.hostname);
+if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+  // Connect to the local Auth emulator
+  import("firebase/auth").then(({ connectAuthEmulator }) => {
+    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    console.log("⚙️ Auth emulator connected");
+  });
+}
+
 export { app, auth, googleProvider };

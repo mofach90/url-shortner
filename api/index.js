@@ -3,7 +3,9 @@ const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
 const generateCode = require("./utils/generateCode");
+const { Timestamp } = require('firebase-admin/firestore');
 
+process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -17,7 +19,6 @@ app.get("/hello", (req, res) => {
 
 function requireAuth(req, res, next) {
   const hdr = req.headers.authorization || "";
-  console.log(" req ", req.body);
   const m = hdr.match(/^Bearer\s+(.+)$/i);
   if (!m) return res.status(401).json({ error: "missing_bearer" });
 
@@ -45,7 +46,6 @@ app.post("/shorten", requireAuth, async (req, res) => {
     }
 
     const urls = db.collection("urls");
-    console.log("Urls", urls);
     const ownerUid = req.user.uid;
     const BASE_URL = process.env.BASE_URL || "https://gdgurl.web.app"; // fallback
 
@@ -54,9 +54,7 @@ app.post("/shorten", requireAuth, async (req, res) => {
     while (true) {
       code = generateCode(7);
       docRef = urls.doc(code);
-      console.log("docRef", docRef);
       const doc = await docRef.get();
-      console.log("doc", doc);
 
       if (!doc.exists) break;
     }
@@ -66,7 +64,7 @@ app.post("/shorten", requireAuth, async (req, res) => {
       longUrl,
       shortUrl: `${BASE_URL}/r/${code}`,
       ownerUid,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: Timestamp.now(),
       clicks: 0,
     };
     console.log("Storing shortened URL:", data);
