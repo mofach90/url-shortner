@@ -22,6 +22,8 @@ ui/*.local
 *.njsproj
 *.sln
 *.sw?
+*.log
+
 
 #firebase
 firebase-debug.log
