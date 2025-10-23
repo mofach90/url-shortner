@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
 const generateCode = require("./utils/generateCode");
-const { Timestamp } = require('firebase-admin/firestore');
+const { Timestamp, FieldValue } = require("firebase-admin/firestore");
 
 process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
 admin.initializeApp();
@@ -83,6 +83,39 @@ app.post("/shorten", requireAuth, async (req, res) => {
     return res.status(500).json({ error: "internal_error" });
   }
 });
+
+// Redirect route: GET /r/:code
+app.get("/r/:code", async (req, res) => {
+  const { code } = req.params;
+  console.log(`Redirect request for code: ${code}`);
+  try {
+    const docRef = admin.firestore().collection("urls").doc(code);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      console.warn(`❌ No URL found for code: ${code}`);
+      // redirect to landing page (or a 404 page)
+      return res.redirect(302, "/");
+    }
+
+    const data = doc.data();
+
+    // increment click count asynchronously (don’t block redirect)
+    await docRef
+      .update({
+        clicks: FieldValue.increment(1),
+        lastVisitedAt: Timestamp.now(),
+      })
+      .catch((err) => console.error("Failed to update click count:", err));
+
+    console.log(`🔁 Redirecting ${code} → ${data.longUrl}`);
+    return res.redirect(302, data.longUrl);
+  } catch (err) {
+    console.error("redirect error:", err);
+    return res.redirect(302, "/");
+  }
+});
+
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
