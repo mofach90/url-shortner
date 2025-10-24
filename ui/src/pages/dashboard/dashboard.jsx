@@ -56,20 +56,20 @@ const DashboardPage = () => {
   const [links, setLinks] = useState([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
   const [activeView, setActiveView] = useState('shorten');
-  async function loadLinks() {
-    try {
-      const data = await fetchWithAuth(`${API_BASE_URL}/links`);
-      setLinks(data.links || []);
-    } catch (err) {
-      console.error('Failed to load links:', err);
-    } finally {
-      setLoadingLinks(false);
-    }
-  }
 
   useEffect(() => {
+    async function loadLinks() {
+      try {
+        const data = await fetchWithAuth(`${API_BASE_URL}/links`);
+        setLinks(data.links || []);
+      } catch (err) {
+        console.error('Failed to load links:', err);
+      } finally {
+        setLoadingLinks(false);
+      }
+    }
     loadLinks();
-  }, []);
+  }, [activeView]);
 
   const showToast = (message, severity = 'info') =>
     setToast({ open: true, message, severity });
