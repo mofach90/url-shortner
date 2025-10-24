@@ -116,6 +116,27 @@ app.get("/r/:code", async (req, res) => {
   }
 });
 
+// List all URLs for the authenticated user
+app.get("/links", requireAuth, async (req, res) => {
+  try {
+    const urlsRef = admin.firestore().collection("urls");
+    const snapshot = await urlsRef
+      .where("ownerUid", "==", req.user.uid)
+      .orderBy("createdAt", "desc")
+      .get();
+
+    const links = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({ links });
+  } catch (err) {
+    console.error("Error listing URLs:", err);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
+
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
