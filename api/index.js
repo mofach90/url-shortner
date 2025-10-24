@@ -137,6 +137,38 @@ app.get("/links", requireAuth, async (req, res) => {
   }
 });
 
+// Get details for a specific short link
+app.get("/links/:code", requireAuth, async (req, res) => {
+  const { code } = req.params;
+  try {
+    const docRef = admin.firestore().collection("urls").doc(code);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "not_found" });
+    }
+
+    const data = doc.data();
+
+    // Only the owner can view details
+    if (data.ownerUid !== req.user.uid) {
+      return res.status(403).json({ error: "forbidden" });
+    }
+
+    return res.status(200).json({
+      code: doc.id,
+      longUrl: data.longUrl,
+      shortUrl: data.shortUrl,
+      createdAt: data.createdAt,
+      clicks: data.clicks ?? 0,
+      lastVisitedAt: data.lastVisitedAt ?? null,
+    });
+  } catch (err) {
+    console.error("Error fetching link:", err);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
+
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
