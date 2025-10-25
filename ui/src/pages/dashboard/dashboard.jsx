@@ -5,8 +5,6 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { deleteLink } from '../../lib/urlService.js';
-
 import {
   Alert,
   alpha,
@@ -29,9 +27,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import ConfirmDialog from '../../components/confirmationDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
 import { API_BASE_URL, fetchWithAuth } from '../../lib/fetchWithAuth.js';
-import { createShortUrl } from '../../lib/urlService.js';
+import { createShortUrl, deleteLink } from '../../lib/urlService.js';
 import Bar from '../home/bar.jsx';
 
 async function handleFetchLinks() {
@@ -58,15 +57,29 @@ const DashboardPage = () => {
   const [links, setLinks] = useState([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
   const [activeView, setActiveView] = useState('shorten');
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    code: null,
+  });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  async function handleDeleteLink(code) {
-    if (!window.confirm('Are you sure you want to delete this link?')) return;
+  function handleRequestDelete(code) {
+    setDeleteDialog({ open: true, code });
+  }
+
+  async function confirmDelete() {
+    const code = deleteDialog.code;
+    setDeleteLoading(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await deleteLink(code);
       showToast('Link deleted successfully', 'success');
       setLinks((prev) => prev.filter((l) => l.code !== code));
     } catch (err) {
       showToast(err.message || 'Failed to delete link', 'error');
+    } finally {
+      setDeleteLoading(false);
+      setDeleteDialog({ open: false, code: null });
     }
   }
 
@@ -563,7 +576,7 @@ const DashboardPage = () => {
               <MyLinksTable
                 links={links}
                 loading={loadingLinks}
-                onDelete={handleDeleteLink}
+                onDelete={handleRequestDelete}
               />
             </Box>
           </Fade>
@@ -612,6 +625,14 @@ const DashboardPage = () => {
       >
         Test Fetch Links
       </Button>
+      <ConfirmDialog
+        open={deleteDialog.open}
+        title='Delete Link'
+        message='Are you sure you want to delete this shortened URL? This action cannot be undone.'
+        onCancel={() => setDeleteDialog({ open: false, code: null })}
+        onConfirm={confirmDelete}
+        loading={deleteLoading}
+      />
     </Box>
   );
 };
