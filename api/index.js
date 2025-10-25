@@ -169,6 +169,34 @@ app.get("/links/:code", requireAuth, async (req, res) => {
   }
 });
 
+// DELETE /api/links/:code
+app.delete("/links/:code", requireAuth, async (req, res) => {
+  try {
+    const { code } = req.params;
+    const urls = admin.firestore().collection("urls");
+
+    const docRef = urls.doc(code);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "not_found" });
+    }
+
+    // Check ownership
+    const data = doc.data();
+    if (data.ownerUid !== req.user.uid) {
+      return res.status(403).json({ error: "forbidden" });
+    }
+
+    await docRef.delete();
+
+    return res.status(200).json({ success: true, code });
+  } catch (err) {
+    console.error("delete link error:", err);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
+
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
