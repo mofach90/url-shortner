@@ -5,6 +5,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { deleteLink } from '../../lib/urlService.js';
+
 import {
   Alert,
   alpha,
@@ -56,6 +58,17 @@ const DashboardPage = () => {
   const [links, setLinks] = useState([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
   const [activeView, setActiveView] = useState('shorten');
+
+  async function handleDeleteLink(code) {
+    if (!window.confirm('Are you sure you want to delete this link?')) return;
+    try {
+      await deleteLink(code);
+      showToast('Link deleted successfully', 'success');
+      setLinks((prev) => prev.filter((l) => l.code !== code));
+    } catch (err) {
+      showToast(err.message || 'Failed to delete link', 'error');
+    }
+  }
 
   useEffect(() => {
     async function loadLinks() {
@@ -547,7 +560,11 @@ const DashboardPage = () => {
         {activeView === 'list' && (
           <Fade in timeout={400}>
             <Box>
-              <MyLinksTable links={links} loading={loadingLinks} />
+              <MyLinksTable
+                links={links}
+                loading={loadingLinks}
+                onDelete={handleDeleteLink}
+              />
             </Box>
           </Fade>
         )}

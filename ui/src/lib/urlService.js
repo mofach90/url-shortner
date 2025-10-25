@@ -39,7 +39,8 @@ export async function deleteLink(code) {
   const res = await fetchWithAuth(`${API_BASE_URL}/links/${code}`, {
     method: 'DELETE',
   });
-  if (!res.ok) {
+  console.log("Delete link response:", res.success);
+  if (!res.success) {
     const error = await res.json();
     throw new Error(error.error || 'Failed to delete link');
   }
