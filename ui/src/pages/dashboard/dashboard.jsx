@@ -32,6 +32,7 @@ import MyLinksTable from '../../components/MyLinksTable.jsx';
 import { API_BASE_URL, fetchWithAuth } from '../../lib/fetchWithAuth.js';
 import { createShortUrl, deleteLink } from '../../lib/urlService.js';
 import Bar from '../home/bar.jsx';
+import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 
 async function handleFetchLinks() {
   try {
@@ -62,6 +63,35 @@ const DashboardPage = () => {
     code: null,
   });
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const [editDialog, setEditDialog] = useState({
+    open: false,
+    link: null,
+  });
+  const [editLoading, setEditLoading] = useState(false);
+
+  function handleEditRequest(link) {
+    setEditDialog({ open: true, link });
+  }
+
+  async function handleSaveEdit(newUrl) {
+    setEditLoading(true);
+    try {
+      // TODO: call backend later
+      // const updated = await updateLink(editDialog.link.code, newUrl);
+      setLinks((prev) =>
+        prev.map((l) =>
+          l.code === editDialog.link.code ? { ...l, longUrl: newUrl } : l,
+        ),
+      );
+      showToast('Link updated successfully!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to update link', 'error');
+    } finally {
+      setEditLoading(false);
+      setEditDialog({ open: false, link: null });
+    }
+  }
 
   function handleRequestDelete(code) {
     setDeleteDialog({ open: true, code });
@@ -576,6 +606,7 @@ const DashboardPage = () => {
               <MyLinksTable
                 links={links}
                 loading={loadingLinks}
+                onEdit={handleEditRequest}
                 onDelete={handleRequestDelete}
               />
             </Box>
@@ -632,6 +663,13 @@ const DashboardPage = () => {
         onCancel={() => setDeleteDialog({ open: false, code: null })}
         onConfirm={confirmDelete}
         loading={deleteLoading}
+      />
+      <EditLinkDialog
+        open={editDialog.open}
+        link={editDialog.link}
+        onClose={() => setEditDialog({ open: false, link: null })}
+        onSave={handleSaveEdit}
+        loading={editLoading}
       />
     </Box>
   );
