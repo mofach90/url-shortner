@@ -1,7 +1,9 @@
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   Link,
   Paper,
   Table,
@@ -11,11 +13,12 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
 
-function MyLinksTable({ links, loading, onDelete }) {
+function MyLinksTable({ links, loading, onDelete, onEdit }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredLinks = links.filter((link) => {
@@ -148,6 +151,16 @@ function MyLinksTable({ links, loading, onDelete }) {
                     >
                       Delete
                     </Button>
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Tooltip title='Edit'>
+                      <IconButton
+                        color='primary'
+                        onClick={() => onEdit(link)} // this will open the dialog
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
