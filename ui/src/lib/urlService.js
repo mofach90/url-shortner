@@ -36,13 +36,12 @@ export async function createShortUrl(longUrl) {
 }
 
 export async function deleteLink(code) {
-  const res = await fetchWithAuth(`${API_BASE_URL}/links/${code}`, {
+  const data = await fetchWithAuth(`${API_BASE_URL}/links/${code}`, {
     method: 'DELETE',
   });
-  console.log("Delete link response:", res.success);
-  if (!res.success) {
-    const error = await res.json();
-    throw new Error(error.error || 'Failed to delete link');
+  if (!data.success) {
+    throw new Error(data.error || 'Failed to delete link');
   }
-  return res.json();
+
+  return data;
 }
