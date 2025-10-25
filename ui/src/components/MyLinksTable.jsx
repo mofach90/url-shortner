@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   CircularProgress,
   Link,
   Paper,
@@ -14,7 +15,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-function MyLinksTable({ links, loading }) {
+function MyLinksTable({ links, loading, onDelete }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredLinks = links.filter((link) => {
@@ -98,8 +99,12 @@ function MyLinksTable({ links, loading }) {
               <TableCell align='center'>
                 <b>Created</b>
               </TableCell>
+              <TableCell align='center'>
+                <b>Actions</b>
+              </TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {filteredLinks.length > 0 ? (
               filteredLinks.map((link) => (
@@ -133,6 +138,16 @@ function MyLinksTable({ links, loading }) {
                           link.createdAt.seconds * 1000,
                         ).toLocaleDateString()
                       : '—'}
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Button
+                      variant='outlined'
+                      color='error'
+                      size='small'
+                      onClick={() => onDelete(link.code)}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
