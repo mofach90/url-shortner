@@ -30,7 +30,7 @@ import { useEffect, useState } from 'react';
 import ConfirmDialog from '../../components/confirmationDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
 import { API_BASE_URL, fetchWithAuth } from '../../lib/fetchWithAuth.js';
-import { createShortUrl, deleteLink } from '../../lib/urlService.js';
+import { createShortUrl, deleteLink, updateLink } from '../../lib/urlService.js';
 import Bar from '../home/bar.jsx';
 import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 
@@ -78,13 +78,17 @@ const DashboardPage = () => {
     setEditLoading(true);
     try {
       // TODO: call backend later
-      // const updated = await updateLink(editDialog.link.code, newUrl);
-      setLinks((prev) =>
-        prev.map((l) =>
-          l.code === editDialog.link.code ? { ...l, longUrl: newUrl } : l,
-        ),
-      );
-      showToast('Link updated successfully!', 'success');
+      console.log('Saving new URL:', newUrl);
+      const updated = await updateLink(editDialog.link.code, newUrl);
+      console.log('Update response:', updated);
+      if (updated.ok) {
+        setLinks((prev) =>
+          prev.map((l) =>
+            l.code === editDialog.link.code ? { ...l, longUrl: newUrl } : l,
+          ),
+        );
+        showToast('Link updated successfully!', 'success');
+      }
     } catch (err) {
       showToast(err.message || 'Failed to update link', 'error');
     } finally {
