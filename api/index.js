@@ -127,10 +127,19 @@ app.get("/links", requireAuth, async (req, res) => {
       .orderBy("createdAt", "desc")
       .get();
 
-    const links = snapshot.docs.map((doc) => ({
+  const links = snapshot.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
       id: doc.id,
-      ...doc.data(),
-    }));
+      code: data.code,
+      longUrl: data.longUrl,
+      shortUrl: data.shortUrl,
+      clicks: data.clicks || 0,
+      createdAt: data.createdAt?.toDate().toISOString() || null, 
+      lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null, 
+    };
+  });
 
     return res.status(200).json({ links });
   } catch (err) {
@@ -158,12 +167,13 @@ app.get("/links/:code", requireAuth, async (req, res) => {
     }
 
     return res.status(200).json({
-      code: doc.id,
+      id: doc.id,
+      code: data.code,
       longUrl: data.longUrl,
       shortUrl: data.shortUrl,
-      createdAt: data.createdAt,
-      clicks: data.clicks ?? 0,
-      lastVisitedAt: data.lastVisitedAt ?? null,
+      clicks: data.clicks || 0,
+      createdAt: data.createdAt?.toDate().toISOString() || null, 
+      lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null, 
     });
   } catch (err) {
     console.error("Error fetching link:", err);

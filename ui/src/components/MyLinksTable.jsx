@@ -139,17 +139,13 @@ function MyLinksTable({ links, loading, onDelete, onEdit }) {
                   </TableCell>
                   <TableCell align='center'>{link.clicks ?? 0}</TableCell>
                   <TableCell align='center'>
-                    {link.createdAt?.seconds
-                      ? new Date(
-                          link.createdAt.seconds * 1000,
-                        ).toLocaleDateString()
+                    {link.createdAt
+                      ? new Date(link.createdAt).toLocaleString()
                       : '—'}
                   </TableCell>
                   <TableCell align='center'>
-                    {link.lastVisitedAt?.seconds
-                      ? new Date(
-                          link.lastVisitedAt.seconds * 1000,
-                        ).toLocaleString()
+                    {link.lastVisitedAt
+                      ? new Date(link.lastVisitedAt).toLocaleString()
                       : '—'}
                   </TableCell>
                   <TableCell align='center'>
