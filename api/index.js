@@ -65,6 +65,7 @@ app.post("/shorten", requireAuth, async (req, res) => {
       shortUrl: `${BASE_URL}/r/${code}`,
       ownerUid,
       createdAt: Timestamp.now(),
+      lastVisitedAt: null,
       clicks: 0,
     };
     console.log("Storing shortened URL:", data);
