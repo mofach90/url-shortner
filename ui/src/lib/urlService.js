@@ -45,3 +45,19 @@ export async function deleteLink(code) {
 
   return data;
 }
+
+export async function updateLink(code, newLongUrl) {
+  const data = await fetchWithAuth(`${API_BASE_URL}/links/${code}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ longUrl: newLongUrl }),
+  });
+
+  if (data.error) {
+    throw new Error(data.error || 'Failed to update link');
+  }
+
+  return data;
+}
