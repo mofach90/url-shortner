@@ -103,6 +103,9 @@ function MyLinksTable({ links, loading, onDelete, onEdit }) {
                 <b>Created</b>
               </TableCell>
               <TableCell align='center'>
+                <b>Last Visited</b>
+              </TableCell>
+              <TableCell align='center'>
                 <b>Actions</b>
               </TableCell>
             </TableRow>
@@ -143,24 +146,28 @@ function MyLinksTable({ links, loading, onDelete, onEdit }) {
                       : '—'}
                   </TableCell>
                   <TableCell align='center'>
+                    {link.lastVisitedAt?.seconds
+                      ? new Date(
+                          link.lastVisitedAt.seconds * 1000,
+                        ).toLocaleString()
+                      : '—'}
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Tooltip title='Edit'>
+                      <IconButton color='primary' onClick={() => onEdit(link)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+
                     <Button
                       variant='outlined'
                       color='error'
                       size='small'
                       onClick={() => onDelete(link.code)}
+                      sx={{ ml: 1 }}
                     >
                       Delete
                     </Button>
-                  </TableCell>
-                  <TableCell align='center'>
-                    <Tooltip title='Edit'>
-                      <IconButton
-                        color='primary'
-                        onClick={() => onEdit(link)} // this will open the dialog
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
