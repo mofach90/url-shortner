@@ -18,6 +18,7 @@ app.get("/hello", (req, res) => {
 });
 
 function requireAuth(req, res, next) {
+  console.log("Authenticating request...");
   const hdr = req.headers.authorization || "";
   const m = hdr.match(/^Bearer\s+(.+)$/i);
   if (!m) return res.status(401).json({ error: "missing_bearer" });
@@ -197,6 +198,44 @@ app.delete("/links/:code", requireAuth, async (req, res) => {
     return res.status(500).json({ error: "internal_error" });
   }
 });
+
+app.patch("/links/:code", requireAuth, async (req, res) => {
+  try {
+    const { code } = req.params;
+    const { longUrl } = req.body;
+    console.log("Update request for code:", code, "with longUrl:", longUrl);
+
+    if (!longUrl) {
+      return res.status(400).json({ error: "missing_longUrl" });
+    }
+
+    try {
+      new URL(longUrl);
+    } catch {
+      return res.status(400).json({ error: "invalid_url" });
+    }
+
+    const docRef = admin.firestore().collection("urls").doc(code);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "not_found" });
+    }
+
+    const data = doc.data();
+    if (data.ownerUid !== req.user.uid) {
+      return res.status(403).json({ error: "forbidden" });
+    }
+
+    await docRef.update({ longUrl });
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("update link error:", err);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
+
 
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
