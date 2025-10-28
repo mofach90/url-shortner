@@ -109,6 +109,11 @@ app.get("/r/:code", async (req, res) => {
         lastVisitedAt: Timestamp.now(),
       })
       .catch((err) => console.error("Failed to update click count:", err));
+    await docRef.collection("clicks").add({
+      timestamp: Timestamp.now(),
+      userAgent: req.get("user-agent") || null,
+      ip: req.headers["x-forwarded-for"] || req.ip || null,
+    });
 
     console.log(`🔁 Redirecting ${code} → ${data.longUrl}`);
     return res.redirect(302, data.longUrl);
@@ -127,19 +132,19 @@ app.get("/links", requireAuth, async (req, res) => {
       .orderBy("createdAt", "desc")
       .get();
 
-  const links = snapshot.docs.map((doc) => {
-    const data = doc.data();
+    const links = snapshot.docs.map((doc) => {
+      const data = doc.data();
 
-    return {
-      id: doc.id,
-      code: data.code,
-      longUrl: data.longUrl,
-      shortUrl: data.shortUrl,
-      clicks: data.clicks || 0,
-      createdAt: data.createdAt?.toDate().toISOString() || null, 
-      lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null, 
-    };
-  });
+      return {
+        id: doc.id,
+        code: data.code,
+        longUrl: data.longUrl,
+        shortUrl: data.shortUrl,
+        clicks: data.clicks || 0,
+        createdAt: data.createdAt?.toDate().toISOString() || null,
+        lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null,
+      };
+    });
 
     return res.status(200).json({ links });
   } catch (err) {
@@ -172,8 +177,8 @@ app.get("/links/:code", requireAuth, async (req, res) => {
       longUrl: data.longUrl,
       shortUrl: data.shortUrl,
       clicks: data.clicks || 0,
-      createdAt: data.createdAt?.toDate().toISOString() || null, 
-      lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null, 
+      createdAt: data.createdAt?.toDate().toISOString() || null,
+      lastVisitedAt: data.lastVisitedAt?.toDate().toISOString() || null,
     });
   } catch (err) {
     console.error("Error fetching link:", err);
@@ -246,6 +251,33 @@ app.patch("/links/:code", requireAuth, async (req, res) => {
   }
 });
 
+app.get("/links/:code/analytics", requireAuth, async (req, res) => {
+  const { code } = req.params;
+  const uid = req.user.uid;
+
+  const urlRef = admin.firestore().collection("urls").doc(code);
+  const urlDoc = await urlRef.get();
+
+  if (!urlDoc.exists) return res.status(404).json({ error: "not_found" });
+  if (urlDoc.data().ownerUid !== uid)
+    return res.status(403).json({ error: "forbidden" });
+
+  // Fetch recent 50 clicks (or all)
+  const snap = await urlRef
+    .collection("clicks")
+    .orderBy("timestamp", "desc")
+    .limit(50)
+    .get();
+
+  const clicks = snap.docs.map((d) => ({
+    id: d.id,
+    timestamp: d.data().timestamp?.toDate().toISOString(),
+    userAgent: d.data().userAgent,
+    ip: d.data().ip,
+  }));
+
+  res.json({ code, total: clicks.length, clicks });
+});
 
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
