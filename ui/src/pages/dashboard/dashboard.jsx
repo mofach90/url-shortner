@@ -28,20 +28,15 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ConfirmDialog from '../../components/confirmationDialog.jsx';
+import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
 import { API_BASE_URL, fetchWithAuth } from '../../lib/fetchWithAuth.js';
-import { createShortUrl, deleteLink, updateLink } from '../../lib/urlService.js';
+import {
+  createShortUrl,
+  deleteLink,
+  updateLink,
+} from '../../lib/urlService.js';
 import Bar from '../home/bar.jsx';
-import EditLinkDialog from '../../components/EditLinkDialog.jsx';
-
-async function handleFetchLinks() {
-  try {
-    const data = await fetchWithAuth(`${API_BASE_URL}/links/D42r1vV`);
-    console.log('Fetched links:', data);
-  } catch (err) {
-    console.error('Error:', err);
-  }
-}
 
 const DashboardPage = () => {
   const theme = useTheme();
@@ -73,6 +68,11 @@ const DashboardPage = () => {
   function handleEditRequest(link) {
     setEditDialog({ open: true, link });
   }
+
+  const handleViewAnalytics = async () => {
+    const data = await fetchWithAuth(`${API_BASE_URL}/links/KnSbd0L/analytics`);
+    console.log('Analytics:', data);
+  };
 
   async function handleSaveEdit(newUrl) {
     setEditLoading(true);
@@ -656,7 +656,7 @@ const DashboardPage = () => {
       <Button
         variant='outlined'
         sx={{ mb: '10rem' }}
-        onClick={handleFetchLinks}
+        onClick={handleViewAnalytics}
       >
         Test Fetch Links
       </Button>
