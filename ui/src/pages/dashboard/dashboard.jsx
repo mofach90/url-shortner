@@ -70,7 +70,7 @@ const DashboardPage = () => {
   }
 
   const handleViewAnalytics = async () => {
-    const data = await fetchWithAuth(`${API_BASE_URL}/links/KnSbd0L/analytics`);
+    const data = await fetchWithAuth(`${API_BASE_URL}/links/LaCHze9/analytics`);
     console.log('Analytics:', data);
   };
 

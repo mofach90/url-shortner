@@ -252,11 +252,13 @@ app.patch("/links/:code", requireAuth, async (req, res) => {
 });
 
 app.get("/links/:code/analytics", requireAuth, async (req, res) => {
+  console.log("Analytics request for code:", req.params.code);
   const { code } = req.params;
   const uid = req.user.uid;
 
   const urlRef = admin.firestore().collection("urls").doc(code);
   const urlDoc = await urlRef.get();
+  console.log("Fetched URL doc:", urlDoc.id, urlDoc.exists, urlDoc.data());
 
   if (!urlDoc.exists) return res.status(404).json({ error: "not_found" });
   if (urlDoc.data().ownerUid !== uid)
@@ -269,12 +271,18 @@ app.get("/links/:code/analytics", requireAuth, async (req, res) => {
     .limit(50)
     .get();
 
-  const clicks = snap.docs.map((d) => ({
-    id: d.id,
-    timestamp: d.data().timestamp?.toDate().toISOString(),
-    userAgent: d.data().userAgent,
-    ip: d.data().ip,
-  }));
+  console.log("Fetched clicks snapshot:", snap.docs.length);
+
+  const clicks = snap.docs.map((d) => {
+    console.log("Click data doc:", d.id, d.data());
+    return {
+      id: d.id,
+      timestamp: d.data().timestamp?.toDate().toISOString(),
+      userAgent: d.data().userAgent,
+      ip: d.data().ip,
+    };
+  });
+  console.log("Mapped clicks data:", clicks);
 
   res.json({ code, total: clicks.length, clicks });
 });
