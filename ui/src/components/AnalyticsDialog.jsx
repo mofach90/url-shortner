@@ -36,7 +36,7 @@ function AnalyticsDialog({ open, onClose, data, link }) {
         onClose={onClose}
         fullWidth
         maxWidth='md'
-        PaperProps={{
+        Paper={{
           sx: {
             borderRadius: 3,
             background: `linear-gradient(135deg, ${alpha(

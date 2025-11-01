@@ -5,6 +5,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AnalyticsOverview from '../../components/AnalyticsOverview.jsx';
 import {
   Alert,
   alpha,
@@ -658,6 +659,7 @@ const DashboardPage = () => {
             </Box>
           </Fade>
         )}
+        {activeView === 'analytics' && <AnalyticsOverview />}
 
         <Box display='flex' justifyContent='center' mt={4} mb={2} gap={2}>
           <Button
@@ -671,6 +673,12 @@ const DashboardPage = () => {
             onClick={() => setActiveView('list')}
           >
             My Links
+          </Button>
+          <Button
+            onClick={() => setActiveView('analytics')}
+            variant={activeView === 'analytics' ? 'contained' : 'outlined'}
+          >
+            Analytics
           </Button>
         </Box>
       </Container>

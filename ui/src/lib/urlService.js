@@ -61,3 +61,8 @@ export async function updateLink(code, newLongUrl) {
 
   return data;
 }
+
+export async function fetchAnalyticsSummary() {
+  const data = await fetchWithAuth(`${API_BASE_URL}/analytics/summary`);
+  return data;
+}
