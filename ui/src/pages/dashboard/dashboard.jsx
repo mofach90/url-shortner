@@ -5,6 +5,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AnalyticsDialog from '../../components/AnalyticsDialog.jsx';
 import {
   Alert,
   alpha,
@@ -64,6 +65,23 @@ const DashboardPage = () => {
     link: null,
   });
   const [editLoading, setEditLoading] = useState(false);
+  const [analyticsDialog, setAnalyticsDialog] = useState({
+    open: false,
+    data: null,
+    link: null,
+  });
+
+  async function handleAnalytics(link) {
+    try {
+      const res = await fetchWithAuth(
+        `${API_BASE_URL}/links/${link.code}/analytics`,
+      );
+      setAnalyticsDialog({ open: true, data: res, link });
+    } catch (err) {
+      console.error('Failed to load analytics:', err);
+      showToast('Failed to load analytics', 'error');
+    }
+  }
 
   function handleEditRequest(link) {
     setEditDialog({ open: true, link });
@@ -612,6 +630,7 @@ const DashboardPage = () => {
                 loading={loadingLinks}
                 onEdit={handleEditRequest}
                 onDelete={handleRequestDelete}
+                onAnalytics={handleAnalytics}
               />
             </Box>
           </Fade>
@@ -674,6 +693,14 @@ const DashboardPage = () => {
         onClose={() => setEditDialog({ open: false, link: null })}
         onSave={handleSaveEdit}
         loading={editLoading}
+      />
+      <AnalyticsDialog
+        open={analyticsDialog.open}
+        onClose={() =>
+          setAnalyticsDialog({ open: false, data: null, link: null })
+        }
+        data={analyticsDialog.data}
+        link={analyticsDialog.link}
       />
     </Box>
   );
