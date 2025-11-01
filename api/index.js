@@ -308,6 +308,7 @@ app.get("/analytics/summary", requireAuth, async (req, res) => {
 
     for (const doc of snap.docs) {
       const data = doc.data();
+      console.log("Processing URL for analytics:", data);
       totalClicks += data.clicks || 0;
 
       // Track most clicked
@@ -318,14 +319,19 @@ app.get("/analytics/summary", requireAuth, async (req, res) => {
           clicks: data.clicks || 0,
         };
       }
-
-      // Track clicks per day (based on createdAt)
-      if (data.lastVisitedAt) {
-        const d = data.lastVisitedAt.toDate();
+      const snap2 = await admin.firestore().collection("urls")
+        .doc(data.code)
+        .collection("clicks")
+        .orderBy("timestamp", "desc")
+        .limit(50)
+        .get();
+      for (const clickDoc of snap2.docs) {
+        const clickData = clickDoc.data();
+        const d = clickData.timestamp.toDate();
         const dayKey = d.toISOString().split("T")[0];
         clicksPerDayMap.set(
           dayKey,
-          (clicksPerDayMap.get(dayKey) || 0) + (data.clicks || 0)
+          (clicksPerDayMap.get(dayKey) || 0) + 1
         );
       }
     }
