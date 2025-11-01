@@ -106,8 +106,12 @@ const DashboardPage = () => {
     setEditDialog({ open: true, link });
   }
 
-  const handleViewAnalytics = async () => {
-    const data = await fetchWithAuth(`${API_BASE_URL}/links/LaCHze9/analytics`);
+  // const handleViewAnalytics = async () => {
+  //   const data = await fetchWithAuth(`${API_BASE_URL}/links/LaCHze9/analytics`);
+  //   console.log('Analytics:', data);
+  // };
+  const handleViewAnalyticsSummary = async () => {
+    const data = await fetchWithAuth(`${API_BASE_URL}/analytics/summary`);
     console.log('Analytics:', data);
   };
 
@@ -694,7 +698,7 @@ const DashboardPage = () => {
       <Button
         variant='outlined'
         sx={{ mb: '10rem' }}
-        onClick={handleViewAnalytics}
+        onClick={handleViewAnalyticsSummary}
       >
         Test Fetch Links
       </Button>
