@@ -30,16 +30,16 @@ function AnalyticsDialog({ open, onClose, data, link }) {
     );
   }
 
-  const clicksPerDay = data.clicks.reduce((acc, c) => {
+  const counts = data.clicks.reduce((acc, c) => {
     if (!c.timestamp) return acc;
-    const day = new Date(c.timestamp).toLocaleDateString();
+    const day = new Date(c.timestamp).toISOString().slice(0, 10); 
     acc[day] = (acc[day] || 0) + 1;
     return acc;
   }, {});
-  const chartData = Object.entries(clicksPerDay).map(([day, count]) => ({
-    day,
-    count,
-  }));
+
+  const chartData = Object.entries(counts)
+    .map(([day, count]) => ({ day, count })) 
+    .sort((a, b) => a.day.localeCompare(b.day));
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth='md'>
@@ -65,7 +65,10 @@ function AnalyticsDialog({ open, onClose, data, link }) {
             <ResponsiveContainer width='100%' height='100%'>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray='3 3' />
-                <XAxis dataKey='day' />
+                <XAxis
+                  dataKey='day'
+                  tickFormatter={(d) => new Date(d).toLocaleDateString()} 
+                />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Line
@@ -98,6 +101,13 @@ function AnalyticsDialog({ open, onClose, data, link }) {
             {c.userAgent?.slice(0, 60)}...
           </Typography>
         ))}
+        <Typography
+          variant='caption'
+          color='text.secondary'
+          sx={{ display: 'block', mb: 1 }}
+        >
+          Live updating every 5s
+        </Typography>
       </DialogContent>
     </Dialog>
   );
