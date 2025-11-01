@@ -109,6 +109,9 @@ function MyLinksTable({ links, loading, onDelete, onEdit, onAnalytics }) {
               <TableCell align='center'>
                 <b>Actions</b>
               </TableCell>
+              <TableCell align='center'>
+                <b>Analytics</b>
+              </TableCell>
             </TableRow>
           </TableHead>
 
