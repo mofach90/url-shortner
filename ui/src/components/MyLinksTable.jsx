@@ -1,3 +1,4 @@
+import BarChartIcon from '@mui/icons-material/BarChart';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
@@ -18,7 +19,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-function MyLinksTable({ links, loading, onDelete, onEdit }) {
+function MyLinksTable({ links, loading, onDelete, onEdit, onAnalytics }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredLinks = links.filter((link) => {
@@ -165,6 +166,14 @@ function MyLinksTable({ links, loading, onDelete, onEdit }) {
                       Delete
                     </Button>
                   </TableCell>
+                  <Tooltip title='View Analytics'>
+                    <IconButton
+                      color='secondary'
+                      onClick={() => onAnalytics(link)}
+                    >
+                      <BarChartIcon />
+                    </IconButton>
+                  </Tooltip>
                 </TableRow>
               ))
             ) : (
