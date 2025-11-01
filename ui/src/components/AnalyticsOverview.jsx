@@ -148,7 +148,7 @@ export default function AnalyticsOverview() {
   };
 
   return (
-    <Box sx={{ maxWidth: 1400, mx: 'auto', p: 3 }}>
+    <Box sx={{ maxWidth: 2500, p: 5 }}>
       {/* Header */}
       <Box mb={4}>
         <Typography variant='h4' fontWeight={700} gutterBottom>
@@ -355,6 +355,7 @@ export default function AnalyticsOverview() {
                 transform: 'translateY(-4px)',
                 boxShadow: 6,
               },
+              'width': '200px',
             }}
           >
             <CardContent>
@@ -386,6 +387,7 @@ export default function AnalyticsOverview() {
                   </Typography>
                 </Box>
               </Stack>
+
               {data.mostClicked ? (
                 <Link
                   href={data.mostClicked.shortUrl}
