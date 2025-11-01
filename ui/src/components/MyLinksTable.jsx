@@ -166,14 +166,16 @@ function MyLinksTable({ links, loading, onDelete, onEdit, onAnalytics }) {
                       Delete
                     </Button>
                   </TableCell>
-                  <Tooltip title='View Analytics'>
-                    <IconButton
-                      color='secondary'
-                      onClick={() => onAnalytics(link)}
-                    >
-                      <BarChartIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <TableCell align='center'>
+                    <Tooltip title='View Analytics'>
+                      <IconButton
+                        color='secondary'
+                        onClick={() => onAnalytics(link)}
+                      >
+                        <BarChartIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
