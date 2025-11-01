@@ -5,7 +5,6 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import AnalyticsDialog from '../../components/AnalyticsDialog.jsx';
 import {
   Alert,
   alpha,
@@ -28,6 +27,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import AnalyticsDialog from '../../components/AnalyticsDialog.jsx';
 import ConfirmDialog from '../../components/confirmationDialog.jsx';
 import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
@@ -70,6 +70,25 @@ const DashboardPage = () => {
     data: null,
     link: null,
   });
+
+  useEffect(() => {
+    let intervalId;
+
+    if (analyticsDialog.open && analyticsDialog.link) {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await fetchWithAuth(
+            `${API_BASE_URL}/links/${analyticsDialog.link.code}/analytics`,
+          );
+          setAnalyticsDialog((prev) => ({ ...prev, data: res }));
+        } catch (err) {
+          console.error('Auto-refresh analytics failed:', err);
+        }
+      }, 5000);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [analyticsDialog.open, analyticsDialog.link]);
 
   async function handleAnalytics(link) {
     try {
