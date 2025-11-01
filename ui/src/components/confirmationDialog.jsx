@@ -27,7 +27,7 @@ function ConfirmDialog({
   return (
     <Dialog
       open={open}
-      TransitionComponent={Transition}
+      transition={Transition}
       keepMounted
       onClose={loading ? undefined : onCancel} // prevent closing while loading
       aria-describedby="alert-dialog-slide-description"
