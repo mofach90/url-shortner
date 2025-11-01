@@ -287,6 +287,66 @@ app.get("/links/:code/analytics", requireAuth, async (req, res) => {
   res.json({ code, total: clicks.length, clicks });
 });
 
+app.get("/analytics/summary", requireAuth, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const urlsRef = admin.firestore().collection("urls");
+    const snap = await urlsRef.where("ownerUid", "==", uid).get();
+
+    if (snap.empty) {
+      return res.json({
+        totalLinks: 0,
+        totalClicks: 0,
+        mostClicked: null,
+        clicksPerDay: [],
+      });
+    }
+
+    let totalClicks = 0;
+    let mostClicked = null;
+    const clicksPerDayMap = new Map();
+
+    for (const doc of snap.docs) {
+      const data = doc.data();
+      totalClicks += data.clicks || 0;
+
+      // Track most clicked
+      if (!mostClicked || (data.clicks || 0) > mostClicked.clicks) {
+        mostClicked = {
+          code: data.code,
+          shortUrl: data.shortUrl,
+          clicks: data.clicks || 0,
+        };
+      }
+
+      // Track clicks per day (based on createdAt)
+      if (data.lastVisitedAt) {
+        const d = data.lastVisitedAt.toDate();
+        const dayKey = d.toISOString().split("T")[0];
+        clicksPerDayMap.set(
+          dayKey,
+          (clicksPerDayMap.get(dayKey) || 0) + (data.clicks || 0)
+        );
+      }
+    }
+
+    // Convert to sorted array
+    const clicksPerDay = Array.from(clicksPerDayMap.entries())
+      .map(([day, count]) => ({ day, count }))
+      .sort((a, b) => new Date(a.day) - new Date(b.day));
+
+    res.json({
+      totalLinks: snap.size,
+      totalClicks,
+      mostClicked,
+      clicksPerDay,
+    });
+  } catch (err) {
+    console.error("Error in /analytics/summary:", err);
+    res.status(500).json({ error: "internal_error" });
+  }
+});
+
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
   res.json({ ok: true, uid: req.user.uid });
