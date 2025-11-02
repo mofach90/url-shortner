@@ -48,6 +48,8 @@ export default function AnalyticsOverview() {
   const theme = useTheme();
 
   useEffect(() => {
+    let intervalId;
+
     async function loadData() {
       try {
         const result = await fetchAnalyticsSummary();
@@ -58,8 +60,15 @@ export default function AnalyticsOverview() {
         setLoading(false);
       }
     }
-    loadData();
-  }, []);
+    intervalId = setInterval(async () => {
+      try {
+        loadData();
+      } catch (err) {
+        console.error('Auto-refresh analytics failed:', err);
+      }
+      return () => clearInterval(intervalId);
+    }, 5000);
+  }, [data]);
 
   if (loading) {
     return (
