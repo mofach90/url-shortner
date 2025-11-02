@@ -1,5 +1,10 @@
-import { Refresh } from '@mui/icons-material';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  AutoAwesome,
+  CheckCircle,
+  ContentCopy,
+  ExpandMore as ExpandMoreIcon,
+  Refresh,
+} from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -18,6 +23,9 @@ import {
   Typography,
   alpha,
   useTheme,
+  Tooltip,
+  Divider,
+  IconButton
 } from '@mui/material';
 import {
   Activity,
@@ -40,7 +48,6 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -55,6 +62,15 @@ export default function AnalyticsOverview() {
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
   const [accordionOpen, setAccordionOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (aiSummary) {
+      await navigator.clipboard.writeText(aiSummary);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleAccordionChange = async (event, isExpanded) => {
     setAccordionOpen(isExpanded);
@@ -172,6 +188,21 @@ export default function AnalyticsOverview() {
       );
     }
     return null;
+  };
+
+  const handleRegenerate = async () => {
+    setAiSummary(null);
+    setLoadingSummary(true);
+    setSummaryError(null);
+    try {
+      const summary = await fetchAiSummary();
+      setAiSummary(summary);
+    } catch (err) {
+      console.error('AI Summary fetch failed:', err);
+      setSummaryError('Failed to generate summary. Please try again.');
+    } finally {
+      setLoadingSummary(false);
+    }
   };
 
   return (
@@ -567,38 +598,301 @@ export default function AnalyticsOverview() {
         </Grid>
       )}
 
-      <Accordion expanded={accordionOpen} onChange={handleAccordionChange}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant='h6' fontWeight={600}>
-            💡 AI-Generated Insights
-          </Typography>
-        </AccordionSummary>
-
-        <AccordionDetails>
-          {loadingSummary ? (
-            <Box display='flex' alignItems='center' gap={1}>
-              <CircularProgress size={20} />
-              <Typography>Analyzing your data with Gemini…</Typography>
-            </Box>
-          ) : summaryError ? (
-            <Typography color='error'>{summaryError}</Typography>
-          ) : aiSummary ? (
-            <Typography
+      <Accordion
+        expanded={accordionOpen}
+        onChange={handleAccordionChange}
+        sx={{
+          'background': `linear-gradient(135deg, ${alpha(
+            theme.palette.primary.main,
+            0.05,
+          )} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
+          'borderRadius': '16px !important',
+          'border': `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+          'boxShadow': accordionOpen ? theme.shadows[4] : theme.shadows[1],
+          'transition': 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:before': {
+            display: 'none',
+          },
+          '&:hover': {
+            boxShadow: theme.shadows[3],
+            borderColor: alpha(theme.palette.primary.main, 0.2),
+          },
+          'mb': 2,
+        }}
+      >
+        <AccordionSummary
+          expandIcon={
+            <Box
               sx={{
-                whiteSpace: 'pre-line',
-                fontSize: '1rem',
-                lineHeight: 1.6,
+                'bgcolor': alpha(theme.palette.primary.main, 0.1),
+                'borderRadius': '50%',
+                'width': 40,
+                'height': 40,
+                'display': 'flex',
+                'alignItems': 'center',
+                'justifyContent': 'center',
+                'transition': 'all 0.3s',
+                '&:hover': {
+                  bgcolor: alpha(theme.palette.primary.main, 0.2),
+                  transform: 'rotate(180deg)',
+                },
               }}
             >
-              {aiSummary}
-            </Typography>
-          ) : (
-            <Button
-              variant='outlined'
-              onClick={() => handleAccordionChange(null, true)}
+              <ExpandMoreIcon color='primary' />
+            </Box>
+          }
+          sx={{
+            'py': 2,
+            'px': 3,
+            '& .MuiAccordionSummary-content': {
+              my: 1.5,
+              alignItems: 'center',
+            },
+          }}
+        >
+          <Stack direction='row' alignItems='center' spacing={2} flex={1}>
+            <Box
+              sx={{
+                p: 1.5,
+                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: `0 4px 12px ${alpha(
+                  theme.palette.primary.main,
+                  0.3,
+                )}`,
+              }}
             >
-              Generate Summary
-            </Button>
+              <AutoAwesome sx={{ color: 'white', fontSize: 28 }} />
+            </Box>
+            <Box>
+              <Typography
+                variant='h6'
+                fontWeight={700}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                AI-Generated Insights
+                {aiSummary && (
+                  <Chip
+                    label='Ready'
+                    size='small'
+                    icon={<CheckCircle sx={{ fontSize: 16 }} />}
+                    color='success'
+                    sx={{ height: 24, fontWeight: 600 }}
+                  />
+                )}
+              </Typography>
+              <Typography
+                variant='body2'
+                color='text.secondary'
+                sx={{ mt: 0.5 }}
+              >
+                Powered by Gemini AI • Get intelligent analysis of your data
+              </Typography>
+            </Box>
+          </Stack>
+        </AccordionSummary>
+
+        <Divider sx={{ mx: 3 }} />
+
+        <AccordionDetails sx={{ p: 3 }}>
+          {loadingSummary ? (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 3,
+                py: 6,
+              }}
+            >
+              <Box position='relative'>
+                <CircularProgress
+                  size={60}
+                  thickness={4}
+                  sx={{ color: theme.palette.primary.main }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <AutoAwesome
+                    sx={{
+                      'fontSize': 24,
+                      'color': theme.palette.primary.main,
+                      'animation': 'pulse 2s ease-in-out infinite',
+                      '@keyframes pulse': {
+                        '0%, 100%': { opacity: 1 },
+                        '50%': { opacity: 0.5 },
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+              <Box textAlign='center'>
+                <Typography variant='h6' fontWeight={600} gutterBottom>
+                  Analyzing Your Data
+                </Typography>
+                <Typography variant='body2' color='text.secondary'>
+                  Gemini AI is processing your analytics and generating
+                  insights...
+                </Typography>
+              </Box>
+            </Box>
+          ) : summaryError ? (
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: alpha(theme.palette.error.main, 0.1),
+                borderRadius: 2,
+                border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
+              }}
+            >
+              <Stack direction='row' spacing={2} alignItems='flex-start'>
+                <Box
+                  sx={{
+                    p: 1,
+                    bgcolor: alpha(theme.palette.error.main, 0.2),
+                    borderRadius: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  <Typography fontSize={24}>⚠️</Typography>
+                </Box>
+                <Box flex={1}>
+                  <Typography
+                    variant='subtitle1'
+                    fontWeight={600}
+                    color='error.main'
+                    gutterBottom
+                  >
+                    Unable to Generate Insights
+                  </Typography>
+                  <Typography variant='body2' color='error.dark'>
+                    {summaryError}
+                  </Typography>
+                  <Button
+                    variant='outlined'
+                    color='error'
+                    size='small'
+                    startIcon={<Refresh />}
+                    onClick={handleRegenerate}
+                    sx={{ mt: 2 }}
+                  >
+                    Try Again
+                  </Button>
+                </Box>
+              </Stack>
+            </Box>
+          ) : aiSummary ? (
+            <Box>
+              <Box
+                sx={{
+                  p: 3,
+                  bgcolor: alpha(theme.palette.background.paper, 0.8),
+                  borderRadius: 2,
+                  border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                  position: 'relative',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <Typography
+                  sx={{
+                    'whiteSpace': 'pre-line',
+                    'fontSize': '1rem',
+                    'lineHeight': 1.8,
+                    'color': theme.palette.text.primary,
+                    '& strong': {
+                      fontWeight: 700,
+                      color: theme.palette.primary.main,
+                    },
+                  }}
+                >
+                  {aiSummary}
+                </Typography>
+              </Box>
+
+              <Stack
+                direction='row'
+                spacing={1}
+                mt={2}
+                justifyContent='flex-end'
+              >
+                <Tooltip title={copied ? 'Copied!' : 'Copy to clipboard'}>
+                  <IconButton
+                    size='small'
+                    onClick={handleCopy}
+                    sx={{
+                      'bgcolor': alpha(theme.palette.primary.main, 0.1),
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.primary.main, 0.2),
+                      },
+                    }}
+                  >
+                    {copied ? (
+                      <CheckCircle sx={{ fontSize: 20 }} color='success' />
+                    ) : (
+                      <ContentCopy sx={{ fontSize: 20 }} color='primary' />
+                    )}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Regenerate insights'>
+                  <IconButton
+                    size='small'
+                    onClick={handleRegenerate}
+                    sx={{
+                      'bgcolor': alpha(theme.palette.secondary.main, 0.1),
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.secondary.main, 0.2),
+                      },
+                    }}
+                  >
+                    <Refresh sx={{ fontSize: 20 }} color='secondary' />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 6, px: 3 }}>
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${alpha(
+                    theme.palette.primary.main,
+                    0.2,
+                  )} 0%, ${alpha(theme.palette.secondary.main, 0.2)} 100%)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 24px',
+                }}
+              >
+                <AutoAwesome
+                  sx={{ fontSize: 40, color: theme.palette.primary.main }}
+                />
+              </Box>
+              <Typography variant='h6' fontWeight={600} gutterBottom>
+                Ready to Unlock Insights?
+              </Typography>
+              <Typography
+                variant='body2'
+                color='text.secondary'
+                mb={3}
+                maxWidth={500}
+                mx='auto'
+              >
+                Let Gemini AI analyze your analytics data and provide
+                personalized recommendations to improve your link performance.
+              </Typography>
+            </Box>
           )}
         </AccordionDetails>
       </Accordion>
