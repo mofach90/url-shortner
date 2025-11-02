@@ -7,6 +7,7 @@ import {
   Chip,
   CircularProgress,
   Grid,
+  IconButton,
   Link,
   Paper,
   Stack,
@@ -14,6 +15,8 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
+import { Refresh } from '@mui/icons-material';
+
 import {
   Activity,
   ArrowDownRight,
@@ -47,28 +50,19 @@ export default function AnalyticsOverview() {
   const [chartType, setChartType] = useState('bar');
   const theme = useTheme();
 
-  useEffect(() => {
-    let intervalId;
-
-    async function loadData() {
-      try {
-        const result = await fetchAnalyticsSummary();
-        setData(result);
-      } catch (err) {
-        console.error('Failed to load analytics:', err);
-      } finally {
-        setLoading(false);
-      }
+  async function loadData() {
+    try {
+      const result = await fetchAnalyticsSummary();
+      setData(result);
+    } catch (err) {
+      console.error('Failed to load analytics:', err);
+    } finally {
+      setLoading(false);
     }
-    intervalId = setInterval(async () => {
-      try {
-        loadData();
-      } catch (err) {
-        console.error('Auto-refresh analytics failed:', err);
-      }
-      return () => clearInterval(intervalId);
-    }, 5000);
-  }, [data]);
+  }
+  useEffect(() => {
+    loadData();
+  }, []);
 
   if (loading) {
     return (
@@ -586,6 +580,15 @@ export default function AnalyticsOverview() {
                 variant={chartType === 'area' ? 'contained' : 'outlined'}
               >
                 Area
+              </Button>
+              <Button
+                onClick={loadData}
+                sx={{ ml: 2, backgroundColor: 'greenyellow' }}
+                variant='contained'
+                size='small'
+                startIcon={<Refresh />}
+              >
+                Refresh
               </Button>
             </ButtonGroup>
           </Stack>
