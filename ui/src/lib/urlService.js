@@ -47,3 +47,12 @@ export async function checkCodeAvailability(code) {
   if (!res.ok) throw new Error("Failed to check availability");
   return res.json(); // { available: true/false }
 }
+
+export async function fetchAiSummary() {
+  console.log('Fetching AI summary...');
+  const res = await fetchWithAuth(`${API_BASE_URL}/analytics/ai-summary`);
+  if (res.error) {
+    throw new Error(res.error || 'Failed to fetch AI summary');
+  }
+  return res.summary;
+}

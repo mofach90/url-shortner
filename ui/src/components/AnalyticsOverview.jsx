@@ -1,4 +1,9 @@
+import { Refresh } from '@mui/icons-material';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   ButtonGroup,
@@ -7,7 +12,6 @@ import {
   Chip,
   CircularProgress,
   Grid,
-  IconButton,
   Link,
   Paper,
   Stack,
@@ -15,8 +19,6 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import { Refresh } from '@mui/icons-material';
-
 import {
   Activity,
   ArrowDownRight,
@@ -42,13 +44,35 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { fetchAnalyticsSummary } from '../lib/urlService.js';
+import { fetchAiSummary, fetchAnalyticsSummary } from '../lib/urlService.js';
 
 export default function AnalyticsOverview() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chartType, setChartType] = useState('bar');
   const theme = useTheme();
+  const [aiSummary, setAiSummary] = useState(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
+  const [accordionOpen, setAccordionOpen] = useState(false);
+
+  const handleAccordionChange = async (event, isExpanded) => {
+    setAccordionOpen(isExpanded);
+
+    if (isExpanded && !aiSummary) {
+      setLoadingSummary(true);
+      setSummaryError(null);
+      try {
+        const summary = await fetchAiSummary();
+        setAiSummary(summary);
+      } catch (err) {
+        console.error('AI Summary fetch failed:', err);
+        setSummaryError('Failed to generate summary. Please try again.');
+      } finally {
+        setLoadingSummary(false);
+      }
+    }
+  };
 
   async function loadData() {
     try {
@@ -542,6 +566,42 @@ export default function AnalyticsOverview() {
           </Grid>
         </Grid>
       )}
+
+      <Accordion expanded={accordionOpen} onChange={handleAccordionChange}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant='h6' fontWeight={600}>
+            💡 AI-Generated Insights
+          </Typography>
+        </AccordionSummary>
+
+        <AccordionDetails>
+          {loadingSummary ? (
+            <Box display='flex' alignItems='center' gap={1}>
+              <CircularProgress size={20} />
+              <Typography>Analyzing your data with Gemini…</Typography>
+            </Box>
+          ) : summaryError ? (
+            <Typography color='error'>{summaryError}</Typography>
+          ) : aiSummary ? (
+            <Typography
+              sx={{
+                whiteSpace: 'pre-line',
+                fontSize: '1rem',
+                lineHeight: 1.6,
+              }}
+            >
+              {aiSummary}
+            </Typography>
+          ) : (
+            <Button
+              variant='outlined'
+              onClick={() => handleAccordionChange(null, true)}
+            >
+              Generate Summary
+            </Button>
+          )}
+        </AccordionDetails>
+      </Accordion>
 
       {/* Chart Section */}
       <Card>
