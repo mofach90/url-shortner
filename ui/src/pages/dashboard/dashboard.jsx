@@ -5,7 +5,6 @@ import LinkIcon from '@mui/icons-material/Link';
 import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import AnalyticsOverview from '../../components/AnalyticsOverview.jsx';
 import {
   Alert,
   alpha,
@@ -29,6 +28,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import AnalyticsDialog from '../../components/AnalyticsDialog.jsx';
+import AnalyticsOverview from '../../components/AnalyticsOverview.jsx';
 import ConfirmDialog from '../../components/confirmationDialog.jsx';
 import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
@@ -50,6 +50,7 @@ const DashboardPage = () => {
     message: '',
     severity: 'info',
   });
+  const [customCode, setCustomCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [focused, setFocused] = useState(false);
   const [links, setLinks] = useState([]);
@@ -185,11 +186,19 @@ const DashboardPage = () => {
     setLoading(true);
     setCopied(false);
     try {
-      const data = await createShortUrl(longUrl);
+      const data = await createShortUrl(longUrl, customCode);
       setResult(data);
       showToast('Short URL created successfully!', 'success');
     } catch (err) {
-      showToast(err.message || 'Something went wrong', 'error');
+      console.error('Error creating short URL:', err);
+      if (err.message.includes('custom_code_taken'))
+        showToast('That short code is already taken. Try another!', 'warning');
+      else if (err.message.includes('invalid_custom_code_format'))
+        showToast(
+          'Custom code can only contain letters, numbers, - or _.',
+          'error',
+        );
+      else showToast('Something went wrong.', 'error');
     } finally {
       setLoading(false);
     }
@@ -418,6 +427,15 @@ const DashboardPage = () => {
                           </Fade>
                         ),
                       }}
+                    />
+                    <TextField
+                      label='Custom short code (optional)'
+                      variant='outlined'
+                      fullWidth
+                      value={customCode}
+                      onChange={(e) => setCustomCode(e.target.value)}
+                      placeholder='e.g., devfest-2025'
+                      sx={{ mt: 2 }}
                     />
                   </Box>
 
