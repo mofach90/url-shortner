@@ -357,6 +357,28 @@ app.get("/analytics/summary", requireAuth, async (req, res) => {
     res.status(500).json({ error: "internal_error" });
   }
 });
+app.get("/check-code/:code", async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    if (!code) return res.status(400).json({ error: "missing_code" });
+
+    const pattern = /^[a-zA-Z0-9-_]{3,30}$/;
+    if (!pattern.test(code))
+      return res.status(400).json({ error: "invalid_format" });
+
+    const doc = await admin.firestore().collection("urls").doc(code).get();
+
+    if (doc.exists) {
+      return res.json({ available: false });
+    } else {
+      return res.json({ available: true });
+    }
+  } catch (err) {
+    console.error("check-code error:", err);
+    return res.status(500).json({ error: "internal_error" });
+  }
+});
 
 // after your /api/hello
 app.get("/ping-secure", requireAuth, (req, res) => {
