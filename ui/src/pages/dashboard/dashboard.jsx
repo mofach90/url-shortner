@@ -203,7 +203,7 @@ const DashboardPage = () => {
           'Custom code can only contain letters, numbers, - or _.',
           'error',
         );
-      else showToast('Something went wrong.', 'error');
+      else showToast(err.message, 'error');
     } finally {
       setLoading(false);
     }
