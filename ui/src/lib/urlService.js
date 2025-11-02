@@ -40,3 +40,10 @@ export async function fetchAnalyticsSummary() {
   const data = await fetchWithAuth(`${API_BASE_URL}/analytics/summary`);
   return data;
 }
+
+
+export async function checkCodeAvailability(code) {
+  const res = await fetch(`${API_BASE_URL}/check-code/${encodeURIComponent(code)}`);
+  if (!res.ok) throw new Error("Failed to check availability");
+  return res.json(); // { available: true/false }
+}

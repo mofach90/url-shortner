@@ -26,7 +26,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AnalyticsDialog from '../../components/AnalyticsDialog.jsx';
 import AnalyticsOverview from '../../components/AnalyticsOverview.jsx';
 import ConfirmDialog from '../../components/confirmationDialog.jsx';
@@ -34,6 +34,7 @@ import EditLinkDialog from '../../components/EditLinkDialog.jsx';
 import MyLinksTable from '../../components/MyLinksTable.jsx';
 import { API_BASE_URL, fetchWithAuth } from '../../lib/fetchWithAuth.js';
 import {
+  checkCodeAvailability,
   createShortUrl,
   deleteLink,
   updateLink,
@@ -51,6 +52,10 @@ const DashboardPage = () => {
     severity: 'info',
   });
   const [customCode, setCustomCode] = useState('');
+  const [checking, setChecking] = useState(false);
+  const [availability, setAvailability] = useState(null);
+  const debounceTimer = useRef(null);
+
   const [copied, setCopied] = useState(false);
   const [focused, setFocused] = useState(false);
   const [links, setLinks] = useState([]);
@@ -217,11 +222,46 @@ const DashboardPage = () => {
     }
   };
 
+  function getHelperText() {
+    if (checking) return 'Checking availability…';
+    if (availability === 'available') return '✅ This code is available!';
+    if (availability === 'taken')
+      return '❌ Already taken, please choose another.';
+    if (availability === 'invalid')
+      return '⚠️ Only letters, numbers, - and _ allowed (3–30 chars).';
+    return ' ';
+  }
+
   const features = [
     { icon: <SpeedIcon />, text: 'Lightning Fast' },
     { icon: <SecurityIcon />, text: 'Secure & Reliable' },
     { icon: <TrendingUpIcon />, text: 'Track Analytics' },
   ];
+  const handleCustomCodeChange = async (e) => {
+    const value = e.target.value.trim();
+    setCustomCode(value);
+    setAvailability(null);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    if (!value) return; // user cleared field
+
+    if (!/^[a-zA-Z0-9-_]{3,30}$/.test(value)) {
+      setAvailability('invalid');
+      return;
+    }
+
+    debounceTimer.current = setTimeout(async () => {
+      setChecking(true);
+      try {
+        const result = await checkCodeAvailability(value);
+        setAvailability(result.available ? 'available' : 'taken');
+      } catch {
+        setAvailability('error');
+      } finally {
+        setChecking(false);
+      }
+    }, 600);
+  };
 
   return (
     <Box
@@ -411,7 +451,7 @@ const DashboardPage = () => {
                           fontWeight: 600,
                         },
                       }}
-                      InputProps={{
+                      Input={{
                         endAdornment: focused && (
                           <Fade in>
                             <Typography
@@ -433,9 +473,66 @@ const DashboardPage = () => {
                       variant='outlined'
                       fullWidth
                       value={customCode}
-                      onChange={(e) => setCustomCode(e.target.value)}
+                      onChange={handleCustomCodeChange}
                       placeholder='e.g., devfest-2025'
-                      sx={{ mt: 2 }}
+                      sx={{
+                        'mt': 2,
+                        '& .MuiOutlinedInput-root': {
+                          '& fieldset': {
+                            borderColor:
+                              availability === 'taken' ||
+                              availability === 'invalid'
+                                ? 'error.main'
+                                : availability === 'available'
+                                ? 'success.main'
+                                : undefined,
+                          },
+                          '&:hover fieldset': {
+                            borderColor:
+                              availability === 'taken' ||
+                              availability === 'invalid'
+                                ? 'error.dark'
+                                : availability === 'available'
+                                ? 'success.dark'
+                                : 'text.primary',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor:
+                              availability === 'taken' ||
+                              availability === 'invalid'
+                                ? 'error.main'
+                                : availability === 'available'
+                                ? 'success.main'
+                                : 'primary.main',
+                            borderWidth: 2,
+                            boxShadow:
+                              availability === 'taken' ||
+                              availability === 'invalid'
+                                ? '0 0 0 3px rgba(211, 47, 47, 0.2)' 
+                                : availability === 'available'
+                                ? '0 0 0 3px rgba(46, 125, 50, 0.2)' 
+                                : '0 0 0 3px rgba(25, 118, 210, 0.2)', 
+                            transition: 'all 0.2s ease',
+                          },
+                        },
+                      }}
+                      helperText={getHelperText()}
+                      slotProps={{
+                        formHelperText: {
+                          sx: {
+                            fontSize: '0.95rem',
+                            fontWeight: 500,
+                            mt: 0.5,
+                            color:
+                              availability === 'taken' ||
+                              availability === 'invalid'
+                                ? 'error.main'
+                                : availability === 'available'
+                                ? 'success.main'
+                                : 'text.secondary',
+                          },
+                        },
+                      }}
                     />
                   </Box>
 
