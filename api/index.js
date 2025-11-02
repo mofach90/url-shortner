@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const generateCode = require("./utils/generateCode");
 const { Timestamp, FieldValue } = require("firebase-admin/firestore");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
 admin.initializeApp();
@@ -377,6 +378,76 @@ app.get("/check-code/:code", async (req, res) => {
   } catch (err) {
     console.error("check-code error:", err);
     return res.status(500).json({ error: "internal_error" });
+  }
+});
+
+app.get("/analytics/ai-summary", requireAuth, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const urlsRef = admin.firestore().collection("urls");
+    const snap = await urlsRef.where("ownerUid", "==", uid).get();
+
+    if (snap.empty) {
+      return res.json({
+        summary:
+          "You haven’t shortened any links yet, so there’s no analytics to summarize.",
+      });
+    }
+
+    // Calculate basic analytics
+    let totalClicks = 0;
+    const clicksPerDayMap = new Map();
+
+    for (const doc of snap.docs) {
+      const data = doc.data();
+      totalClicks += data.clicks || 0;
+
+      const clicksSnap = await urlsRef
+        .doc(data.code)
+        .collection("clicks")
+        .orderBy("timestamp", "desc")
+        .limit(50)
+        .get();
+
+      for (const clickDoc of clicksSnap.docs) {
+        const clickData = clickDoc.data();
+        const day = clickData.timestamp.toDate().toISOString().split("T")[0];
+        clicksPerDayMap.set(day, (clicksPerDayMap.get(day) || 0) + 1);
+      }
+    }
+
+    const clicksPerDay = Array.from(clicksPerDayMap.entries())
+      .map(([day, count]) => ({ day, count }))
+      .sort((a, b) => new Date(a.day) - new Date(b.day));
+
+    const analytics = {
+      totalLinks: snap.size,
+      totalClicks,
+      clicksPerDay,
+    };
+    console.log("Analytics data for AI summary:", analytics);
+    // -- Gemini AI call ---
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `
+      You are a concise analytics assistant.
+      Here is the user's URL analytics data:
+
+      ${JSON.stringify(analytics, null, 2)}
+
+      Write a short, insightful summary (3-5 sentences) describing their link performance,
+      traffic trends, and any interesting patterns.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const summary = result.response.text();
+    console.log("Generated AI summary:", summary);
+
+    res.json({ summary });
+  } catch (err) {
+    console.error("AI Summary error:", err);
+    res.status(500).json({ error: "ai_summary_failed" });
   }
 });
 
