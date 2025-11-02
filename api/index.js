@@ -35,29 +35,42 @@ function requireAuth(req, res, next) {
 
 app.post("/shorten", requireAuth, async (req, res) => {
   try {
-    const { longUrl } = req.body;
-    console.log("Received longUrl:", longUrl);
-    if (!longUrl) {
-      return res.status(400).json({ error: "missing_longUrl" });
-    }
+    const { longUrl, customCode } = req.body;
+    console.log("Received shorten request:", { longUrl, customCode });
+
+    if (!longUrl) return res.status(400).json({ error: "missing_longUrl" });
     try {
       new URL(longUrl);
     } catch {
       return res.status(400).json({ error: "invalid_url" });
     }
 
-    const urls = db.collection("urls");
+    const urls = admin.firestore().collection("urls");
     const ownerUid = req.user.uid;
-    const BASE_URL = process.env.BASE_URL || "https://gdgurl.web.app"; // fallback
+    const BASE_URL = process.env.BASE_URL || "https://mo-url-shortner.web.app";
 
+    // If user provided a custom code, validate it
     let code;
-    let docRef;
-    while (true) {
-      code = generateCode(7);
-      docRef = urls.doc(code);
-      const doc = await docRef.get();
+    if (customCode) {
+      const pattern = /^[a-zA-Z0-9-_]{3,30}$/;
+      if (!pattern.test(customCode))
+        return res.status(400).json({ error: "invalid_custom_code_format" });
 
-      if (!doc.exists) break;
+      const customDoc = await urls.doc(customCode).get();
+      if (customDoc.exists)
+        return res.status(409).json({ error: "custom_code_taken" });
+
+      code = customCode;
+    } else {
+      // otherwise generate a random code
+      while (true) {
+        const candidate = generateCode(7);
+        const doc = await urls.doc(candidate).get();
+        if (!doc.exists) {
+          code = candidate;
+          break;
+        }
+      }
     }
 
     const data = {
@@ -67,19 +80,12 @@ app.post("/shorten", requireAuth, async (req, res) => {
       ownerUid,
       createdAt: Timestamp.now(),
       lastVisitedAt: null,
+
       clicks: 0,
     };
-    console.log("Storing shortened URL:", data);
 
-    const result = await docRef.set(data);
-    console.log("Stored document result:", result);
-
-    return res.status(201).json({
-      code: data.code,
-      longUrl: data.longUrl,
-      shortUrl: data.shortUrl,
-      createdAt: data.createdAt,
-    });
+    await urls.doc(code).set(data);
+    return res.status(201).json(data);
   } catch (err) {
     console.error("shorten error:", err);
     return res.status(500).json({ error: "internal_error" });
@@ -319,7 +325,9 @@ app.get("/analytics/summary", requireAuth, async (req, res) => {
           clicks: data.clicks || 0,
         };
       }
-      const snap2 = await admin.firestore().collection("urls")
+      const snap2 = await admin
+        .firestore()
+        .collection("urls")
         .doc(data.code)
         .collection("clicks")
         .orderBy("timestamp", "desc")
@@ -329,10 +337,7 @@ app.get("/analytics/summary", requireAuth, async (req, res) => {
         const clickData = clickDoc.data();
         const d = clickData.timestamp.toDate();
         const dayKey = d.toISOString().split("T")[0];
-        clicksPerDayMap.set(
-          dayKey,
-          (clicksPerDayMap.get(dayKey) || 0) + 1
-        );
+        clicksPerDayMap.set(dayKey, (clicksPerDayMap.get(dayKey) || 0) + 1);
       }
     }
 
