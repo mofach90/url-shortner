@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, alpha, useTheme } from '@mui/material';
 import Bar from './bar.jsx';
 import Footer from './footer.jsx';
 
@@ -10,6 +10,8 @@ const Home = ({
   links,
   showRegisterBtn,
 }) => {
+  const theme = useTheme();
+
   return (
     <Box
       display='flex'
@@ -17,7 +19,16 @@ const Home = ({
       sx={{ minHeight: '100vh', width: '100%' }}
     >
       {/* Header */}
-      <Box component='header' sx={{ width: '100%' }}>
+      <Box
+        component='header'
+        sx={{
+          width: '100%',
+          background: `linear-gradient(135deg, ${alpha(
+            theme.palette.primary.main,
+            0.05,
+          )} 0%, ${alpha(theme.palette.background.paper, 1)} 100%)`,
+        }}
+      >
         <Bar name={appName} showRegisterBtn={showRegisterBtn} {...barProps} />
       </Box>
 
