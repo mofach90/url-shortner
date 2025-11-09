@@ -26,9 +26,9 @@ const Page = ({
       </Grid>
     )}
 
-    <Grid item xs={12}>
+    <Grid sx={{height:'100%', width:'100%'}} item xs={12}>
       {isLoading}
-      <Box hidden={isLoading}>{children}</Box>
+      <Box hidden={isLoading} sx={{height:'100%', width:'100%'}}>{children}</Box>
     </Grid>
   </Grid>
 );
