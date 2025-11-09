@@ -25,7 +25,7 @@ const Home = ({
           width: '100%',
           background: `linear-gradient(135deg, ${alpha(
             theme.palette.primary.main,
-            0.05,
+            0.55,
           )} 0%, ${alpha(theme.palette.background.paper, 1)} 100%)`,
         }}
       >
@@ -47,7 +47,17 @@ const Home = ({
       </Box>
 
       {/* Footer */}
-      <Box component='footer' sx={{ width: '100%' }}>
+      <Box
+        component='footer'
+        sx={{
+          width: '100%',
+
+          background: `linear-gradient(135deg, ${alpha(
+            theme.palette.primary.main,
+            0.55,
+          )} 0%, ${alpha(theme.palette.background.paper, 1)} 100%)`,
+        }}
+      >
         <Footer links={links} company={company} />
       </Box>
     </Box>
