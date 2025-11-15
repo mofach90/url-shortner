@@ -2,9 +2,10 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
-const generateCode = require("./utils/generateCode");
+const generateCode = require("./utils/generateCode").default;
 const { Timestamp, FieldValue } = require("firebase-admin/firestore");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+import requireAuth from "./middleware/requireAuth.js";
 
 process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
 admin.initializeApp();
@@ -17,22 +18,6 @@ app.use(cors({ origin: true }));
 app.get("/hello", (req, res) => {
   res.status(200).send({ message: "Hello from the API!" });
 });
-
-function requireAuth(req, res, next) {
-  console.log("Authenticating request...");
-  const hdr = req.headers.authorization || "";
-  const m = hdr.match(/^Bearer\s+(.+)$/i);
-  if (!m) return res.status(401).json({ error: "missing_bearer" });
-
-  admin
-    .auth()
-    .verifyIdToken(m[1])
-    .then((decoded) => {
-      req.user = decoded;
-      next();
-    })
-    .catch(() => res.status(401).json({ error: "invalid_token" }));
-}
 
 app.post("/shorten", requireAuth, async (req, res) => {
   try {
